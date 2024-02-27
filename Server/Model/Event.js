@@ -21,16 +21,20 @@ const eventSchema = new mongoose.Schema(
       type: Number,
     },
     images: {
-      type: Array,
+      type: String,
     },
     coodinates: {
       type: Array,
+    },
+    food:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: User,
     },
     ownerId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: User,
     },
-    JoinerID: [{ type: mongoose.Schema.Types.ObjectId, ref: User }],
+    joinerId: [{ type: mongoose.Schema.Types.ObjectId, ref: User }],
   },
   {
     timestamps: true,
