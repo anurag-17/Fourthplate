@@ -3,18 +3,26 @@ const bodyParser = require("body-parser");
 const express = require("express");
 const path = require("path");
 const app = express();
+
+const setupProxy = require('../client/src/setupProxy');
+
+setupProxy(app);
 require("dotenv").config();
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "500kb", extended: true }));
 app.use(bodyParser.urlencoded({ extended: true }));
-const corsOptions = {
-  origin: ["http://localhost:3000", "*"],
-  credentials: true,
-};
+// const corsOptions = {
+//   origin: ["http://localhost:3000", "*"],
+//   credentials: true,
+// };
 
-app.use(cors(corsOptions));
-const connectDB = require("./Utils/db");
+// app.use(cors());
+app.use(cors({ origin: "*" }));
+
 app.use('/api/adminauth', require('./Route/AdminRoute'));
+
+const connectDB = require("./Utils/db");
+
 if (process.env.NODE_ENV === "dev") {
   //replaced "production" with "dev"
   app.use(express.static("../client/build"));
