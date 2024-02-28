@@ -14,7 +14,7 @@ const ForgotPassword = () => {
         e.preventDefault();
         setLoading(true)
         try {
-            const res = await axios.post('/api/auth/forgotpassword', {email:email}, {
+            const res = await axios.post('/api/adminauth/forgotPassword', {email:email}, {
                 headers: {
                     'Content-Type': 'application/json',
                 },

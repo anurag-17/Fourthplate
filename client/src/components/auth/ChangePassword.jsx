@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useDispatch, useSelector } from "react-redux";
+
 
 import OpenEye from "../admin-pages/Svg/OpenEye";
 import CloseEye from "../admin-pages/Svg/CloseEye";
@@ -18,10 +18,11 @@ const ChangePassword = () => {
   });
   const [cnfmPassword, setCnfmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
   const [showCnfmPassword, setShowCnfmPassword] = useState(false);
   const [isLoading, setLoading] = useState(false);
   const [isError, setError] = useState("");
-  const { token } = useSelector((state) => state?.auth);
+  const [token, setToken] = useState(JSON.parse(localStorage.getItem("ad_token"))  || null)
 
   const InputHandler = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -39,7 +40,7 @@ const ChangePassword = () => {
         setLoading(true);
 
         const res = await axios.post(
-          "/api/auth/updatePassword",
+          "/api/adminauth/updatePass",
           formData,
           {
             headers: {
@@ -112,7 +113,7 @@ const ChangePassword = () => {
                     </div>
                     <div className="relative flex justify-center items-center">
                       <input
-                        type={showCnfmPassword ? "text" : "password"}
+                        type={showNewPassword ? "text" : "password"}
                         name="newPassword"
                         placeholder="New password"
                         className="login-input placeholder:text-[gray] w-full mt-2 custom-input"
@@ -122,14 +123,14 @@ const ChangePassword = () => {
                       />
                       <div
                         className="absolute right-[10px] cursor-pointer"
-                        onClick={() => setShowCnfmPassword(!showCnfmPassword)}
+                        onClick={() => setShowNewPassword(!showNewPassword)}
                       >
-                        {showCnfmPassword ? <OpenEye /> : <CloseEye />}
+                        {showNewPassword ? <OpenEye /> : <CloseEye />}
                       </div>
                     </div>
                     <div className="relative flex justify-center items-center">
                       <input
-                        type={"password"}
+                        type={showCnfmPassword ? "text" : "password"}
                         name="cnfmPassword"
                         placeholder="Confirm new password "
                         className="login-input placeholder:text-[gray] w-full mt-2 custom-input"
@@ -137,12 +138,12 @@ const ChangePassword = () => {
                         minLength={8}
                         required
                       />
-                      {/* <div
+                      <div
                         className="absolute dash-menu right-[10px] cursor-pointer"
-                        onClick={() => setShowPassword(!showPassword)}
+                        onClick={() => setShowCnfmPassword(!showCnfmPassword)}
                       >
-                        {showPassword ? <OpenEye /> : <CloseEye />}
-                      </div> */}
+                        {showCnfmPassword ? <OpenEye /> : <CloseEye />}
+                      </div>
                     </div>
 
                     {isError && (

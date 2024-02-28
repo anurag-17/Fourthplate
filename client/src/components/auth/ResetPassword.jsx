@@ -18,10 +18,10 @@ const ResetPassword = () => {
         e.preventDefault();
         setLoading(true)
         try {
-            const response = await axios.post('/api/auth/resetpassword', {password:password}, {
+            const response = await axios.post('/api/adminauth/resetPassword', {password:password}, {
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization: `Bearer ${resetToken}`,
+                    Authorization:{resetToken},
                 },
             });
 
@@ -53,7 +53,7 @@ const ResetPassword = () => {
                             <div className="flex flex-col gap-4 justify-center p-8 lg:p-14 md:max-w-[80%] lg:w-full lg:max-w-[100%] mx-auto ">
                                 <div className="text-left ">
                                     <p className="mb-2 2xl:text-[40px] md:text-[35px] text-[30px] leading-[38px] font-bold">Reset your password</p>
-                                    <p className=" md:text-[16px] text-[15px] font-[400] leading-[26px] text-gray-400 mt-2 mb-4 text-[#494949]">
+                                    <p className=" md:text-[16px] text-[15px] font-[400] leading-[26px] mt-2 mb-4 text-[#494949]">
                                         Please enter a new password to access admin dashboard
                                     </p>
                                 </div>
@@ -72,7 +72,7 @@ const ResetPassword = () => {
                                     <button
                                         type="submit"
                                         disabled={isLoading}
-                                        className="w-full bg-[#1f2432] font-medium text-white p-2 rounded-lg  hover:bg-white hover:border hover:border-gray-300 h-[50px] login-btn"
+                                        className="login_button"
                                     >
                                         {isLoading ? "Loading.." : "Reset password"}
                                     </button>
