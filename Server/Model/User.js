@@ -29,6 +29,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: "User",
   },
+  eventJoined:[{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: Event
+  }],
   activeToken: {
     type: String,
   },
