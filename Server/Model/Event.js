@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const User = require("./User");
+const Food = require("./Food");
 const eventSchema = new mongoose.Schema(
   {
     eventName: {
@@ -9,7 +10,7 @@ const eventSchema = new mongoose.Schema(
       type: String,
     },
     date: {
-      type: String,
+      type: Date,
     },
     time: {
       type: String,
@@ -21,20 +22,26 @@ const eventSchema = new mongoose.Schema(
       type: Number,
     },
     images: {
-      type: Array,
+      type: String,
     },
-    coodinates: {
-      type: Array,
+    coordinates: {
+      type: { type: String, enum: ['Point'], default: 'Point' },
+      coordinates: { type: [Number], required: true } // [longitude, latitude]
+    },
+    food:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: Food,
     },
     ownerId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: User,
     },
-    JoinerID: [{ type: mongoose.Schema.Types.ObjectId, ref: User }],
+    joinerId: [{ type: mongoose.Schema.Types.ObjectId, ref: User }],
   },
   {
     timestamps: true,
   }
 );
+eventSchema.index({ coordinates: '2dsphere' });
 const Event = mongoose.model("Event", eventSchema)
 module.exports = Event

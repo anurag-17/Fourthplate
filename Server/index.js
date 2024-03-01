@@ -4,9 +4,9 @@ const express = require("express");
 const path = require("path");
 const app = express();
 
-const setupProxy = require('../client/src/setupProxy');
+// const setupProxy = require('../client/src/setupProxy');
 
-setupProxy(app);
+// setupProxy(app);
 require("dotenv").config();
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "500kb", extended: true }));
@@ -20,6 +20,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors({ origin: "*" }));
 
 app.use('/api/adminauth', require('./Route/AdminRoute'));
+app.use('/api/userauth', require('./Route/UserRoute'))
+app.use('/api/eventauth', require('./Route/EventRoute'))
 
 const connectDB = require("./Utils/db");
 
