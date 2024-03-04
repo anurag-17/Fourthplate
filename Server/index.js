@@ -142,7 +142,7 @@ if (process.env.NODE_ENV === "dev") {
 //   }
 // });
 
-const PORT = process.env.PORT || 5000; // Use 3000 if process.env.PORT is not defined
+const PORT = process.env.PORT || 4000;
 
 app.listen(PORT, () => {
   console.log(`Running on port ${PORT}`);

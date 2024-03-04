@@ -24,9 +24,21 @@ const eventSchema = new mongoose.Schema(
     images: {
       type: String,
     },
-    coordinates: {
-      type: { type: String, enum: ['Point'], default: 'Point' },
-      coordinates: { type: [Number], required: true } // [longitude, latitude]
+    state: {
+      type: String,
+    },
+    city: {
+      type: String
+    },
+    // coordinates: {
+    //   type: { type: String, enum: ['Point'], default: 'Point' },
+    //   coordinates: { type: [Number], required: true } // [longitude, latitude]
+    // },
+    latitude: {
+      type: Number,
+    },
+    longitude: {
+      type: Number,
     },
     food:{
         type: mongoose.Schema.Types.ObjectId,

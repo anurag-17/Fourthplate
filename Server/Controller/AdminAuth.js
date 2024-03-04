@@ -248,8 +248,7 @@ exports.resetPassword = async (req, res) => {
     } else {
       token = authHeader;
     }
-    const tokenUser =  await verifyToken(token)
- ; // Assuming you have the user's ID from the session or token
+    const tokenUser =  await verifyToken(token); // Assuming you have the user's ID from the session or token
     const { newPassword } = req.body;
 
     if (!newPassword) {
