@@ -11,7 +11,7 @@ const userSchema = new mongoose.Schema({
   },
   contact: {
     type: String,
-    unique: [true, "Contact number already exist."],
+    // unique: [true, "Contact number already exist."],
   },
   password: {
     type: String,
@@ -33,6 +33,10 @@ const userSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: Event
   }],
+  isBlocked: {
+    type: Boolean,
+    default: false
+  },
   activeToken: {
     type: String,
   },

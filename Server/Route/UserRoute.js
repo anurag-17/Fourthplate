@@ -9,9 +9,9 @@ router.route("/login").post(loginUser)
 router.route("/logout").get(isAuthJWT, authorizeRoles("User"), logoutUser)
 router.route("/forgotPassword").post(forgotPwd)
 router.route("/resetPassword").post(resetPassword)
-router.route("/deletuser").delete(isAuthJWT, authorizeRoles("User"),deleteUser)
+router.route("/deletuser/:id").delete(isAuthJWT,deleteUser)
 router.route("/updatePassword").put(isAuthJWT, authorizeRoles("User"),updateUserPassword)
-router.route("/update").put(isAuthJWT, authorizeRoles("User"),updateUser)
+router.route("/update/:id").put(isAuthJWT,updateUser)
 
 
 // router.route("/login").get(adminLogin)

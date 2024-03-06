@@ -48,7 +48,7 @@ exports.uploadImage = async (req, res, next) => {
 };
 exports.addUser = async (req, res) => {
   try {
-    const { name, email, password, age, picture, gender } = req.body;
+    const { name, email, password, contact,age, picture, gender } = req.body;
 
     if (!name || !email || !password) {
       return res
@@ -68,6 +68,7 @@ exports.addUser = async (req, res) => {
     const userData = new User({
       name,
       email,
+      contact,
       password: hashedPassword,
       age,
       picture,
@@ -105,7 +106,7 @@ exports.addUser = async (req, res) => {
   }
 };
 exports.updateUser = async (req, res) => {
-  const id = req.user._id; // Assuming the user's ID is passed as a URL parameter
+  const id = req.params; // Assuming the user's ID is passed as a URL parameter
   let updateData = req.body; // The updated information is expected to be in the request body
 
   // Remove the email field from the updateData object if it exists
@@ -281,7 +282,7 @@ exports.resetPassword = async (req, res) => {
 };
 // Delete user controller
 exports.deleteUser = async (req, res) => {
-  const id = req.user._id; // Assuming the user's ID is securely obtained from the authenticated session
+  const id = req.params; // Assuming the user's ID is securely obtained from the authenticated session
 
   try {
     // Attempt to delete the user by ID

@@ -14,6 +14,6 @@ router.route("/getAllFoods").get(isAuthJWT,getAllFoods)
 router.route("/addEvent").post(isAuthJWT,addEvent)
 router.route("/getAllEvent").post(isAuthJWT,getAllEvents)
 router.route("/getEventById/:id").get(isAuthJWT,getEventById)
-router.route("/deleteEvent").delete(deleteEvent)
+router.route("/deleteEvent/:id").delete(isAuthJWT, deleteEvent)
 
 module.exports = router;
