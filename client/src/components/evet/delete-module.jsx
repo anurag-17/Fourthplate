@@ -17,7 +17,7 @@ const DeleteModule = ({ id, closeModal, refreshData }) => {
 
     try {
       const response = await axios.delete(
-        `http://localhost:5000/api/eventauth/deleteEvent/${id}`,
+        `http://34.242.24.155:5000/api/eventauth/deleteEvent/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

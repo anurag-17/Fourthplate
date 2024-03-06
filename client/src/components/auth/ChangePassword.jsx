@@ -222,7 +222,7 @@ const ChangePassword = () => {
       try {
         setLoader(true);
         const res = await axios.post(
-          "http://localhost:5000/api/adminauth/updatePass",
+          "http://34.242.24.155:5000/api/adminauth/updatePass",
           formData,
           {
             headers: {

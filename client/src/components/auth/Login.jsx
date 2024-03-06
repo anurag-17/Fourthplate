@@ -24,7 +24,7 @@ const Login = () => {
     e.preventDefault();
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/adminauth/login",
+        "http://34.242.24.155:5000/api/adminauth/login",
         loginDetails,
         {
           headers: {

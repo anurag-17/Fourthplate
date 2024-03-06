@@ -50,7 +50,7 @@ const AllEvent = () => {
   const defaultEvent = () => {
     const option = {
       method: "POST",
-      url: "http://localhost:5000/api/eventauth/getAllEvent",
+      url: "http://34.242.24.155:5000/api/eventauth/getAllEvent",
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
@@ -72,7 +72,7 @@ const AllEvent = () => {
     try {
       const options = {
         method: "GET",
-        url: `http://localhost:5000/api/eventauth/getEventById/${_id}`,
+        url: `http://34.242.24.155:5000/api/eventauth/getEventById/${_id}`,
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",

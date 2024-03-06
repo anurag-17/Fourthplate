@@ -22,7 +22,7 @@ const AdminDashboard = () => {
   const handleSignout = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:5000/api/adminauth/logout",
+        "http://34.242.24.155:5000/api/adminauth/logout",
         {
           headers: {
             Authorization: `Bearer ${token}`,

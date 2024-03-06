@@ -34,7 +34,7 @@ const User = () => {
   const defaultUser = () => {
     const option = {
       method: "GET",
-      url: "http://localhost:5000/api/adminauth/getalluser",
+      url: "http://34.242.24.155:5000/api/adminauth/getalluser",
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
@@ -69,7 +69,7 @@ const User = () => {
 
     try {
       const res = await axios.put(
-        `http://localhost:5000/api/userauth/update/${id}`,
+        `http://34.242.24.155:5000/api/userauth/update/${id}`,
         { isBlocked: !isBlocked },
         {
           headers: {

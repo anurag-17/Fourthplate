@@ -12,7 +12,7 @@ const DeleteUser = ({ id, closeModal, refreshData }) => {
 
     const options = {
       method: "DELETE",
-      url: `http://localhost:5000/api/userauth/deletuser/${id}`,
+      url: `http://34.242.24.155:5000/api/userauth/deletuser/${id}`,
 
       headers: {
         Authorization: `Bearer ${token}`,
