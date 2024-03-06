@@ -282,7 +282,7 @@ exports.resetPassword = async (req, res) => {
 };
 // Delete user controller
 exports.deleteUser = async (req, res) => {
-  const id = req.params; // Assuming the user's ID is securely obtained from the authenticated session
+  const {id} = req.params; // Assuming the user's ID is securely obtained from the authenticated session
 
   try {
     // Attempt to delete the user by ID
