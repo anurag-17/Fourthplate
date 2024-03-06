@@ -1,6 +1,7 @@
 import React from "react";
 import ChangePassword from "./ChangePassword";
 import { Link } from "react-router-dom";
+import AdminProfile from "./adminProfile";
 
 const Setting = () => {
   return (
@@ -17,7 +18,7 @@ const Setting = () => {
             <input type="radio" name="my-accordion-2" defaultChecked />
             <div className="collapse-title text-xl font-medium">Profile</div>
             <div className="collapse-content">
-              <p>hello</p>
+              <AdminProfile/>
             </div>
           </div>
           <div className="collapse collapse-arrow bg-base-200 border-2 mt-5">
