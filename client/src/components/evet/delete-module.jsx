@@ -1,44 +1,44 @@
 import React, { useState } from "react";
 import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 
-const DeleteUser = ({ id, closeModal, refreshData }) => {
+const DeleteModule = ({ id, closeModal, refreshData }) => {
   const [isLoading, setLoading] = useState(false);
   const token = JSON.parse(localStorage.getItem("token"));
 
-  const handleDelete = (e) => {
+  const handleClose = () => {
+    closeModal();
+  };
+
+  const handleDelete = async (e) => {
     e.preventDefault();
     setLoading(true);
 
-    const options = {
-      method: "DELETE",
-      url: `http://localhost:5000/api/userauth/deletuser/${id}`,
-
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    };
-
-    axios
-      .request(options)
-      .then(function (res) {
-        if (res.data?.success) {
-          setLoading(false);
-          toast.success("User deleted successfully!");
-          closeModal();
-          refreshData();
-        } else {
-          setLoading(false);
-          toast.error("Failed. something went wrong!");
-          return;
+    try {
+      const response = await axios.delete(
+        `http://localhost:5000/api/eventauth/deleteEvent/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         }
-      })
-      .catch(function (error) {
-        setLoading(false);
-        console.error(error);
-        toast.error("Server error!");
-      });
+      );
+
+      if (response.status === 200) {
+        toast.success("Category Deleted successfully!");
+        closeModal();
+        refreshData();
+      } else {
+        toast.error("Failed. Something went wrong!");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed. Something went wrong!");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -55,7 +55,7 @@ const DeleteUser = ({ id, closeModal, refreshData }) => {
           <button
             className="w-full border border-1 rounded-md border-lightBlue-400 text-lightBlue-700 hover:bg-lightBlue-200 text-sm  px-2 py-3
                               hover:border-none  border-sky-400 text-sky-700 hover:bg-sky-200 custom_btn_d "
-            onClick={closeModal}
+            onClick={handleClose}
           >
             No, Keep It
           </button>
@@ -78,4 +78,4 @@ const DeleteUser = ({ id, closeModal, refreshData }) => {
   );
 };
 
-export default DeleteUser;
+export default DeleteModule;

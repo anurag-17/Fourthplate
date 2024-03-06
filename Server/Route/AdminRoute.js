@@ -5,7 +5,7 @@ const { getUserById, getAllUsersWithPagination } = require("../Controller/UserAu
 const router = express.Router()
 
 router.route("/addAdmin").post(addAdmin)
-router.route("/login").get(adminLogin)
+router.route("/login").post(adminLogin)
 router.route("/updatePass").post(isAuthJWT,authorizeRoles("Admin"),updatePassword)
 router.route("/logout").get(isAuthJWT, authorizeRoles("Admin"), logout)
 router.route("/forgotPassword").post(forgotPwd)

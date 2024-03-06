@@ -2,303 +2,215 @@ import React, { Fragment, useState, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import axios from "axios";
 import { Switch } from "@headlessui/react";
-
 import DeleteUser from "./DeleteUser";
 import CloseIcon from "../Svg/CloseIcon";
 import Pagination from "../../pagination/Pagination";
 import Loader from "../../loader/Index";
-import PreviewModal from "./PreviewModal";
-
-export const headItems = [
-  "S. No.",
-  "Name",
-  " Contact No",
-  "Email",
-  "Block user",
-  "Action",
-];
+import { ToastContainer, toast } from "react-toastify";
 
 const User = () => {
+  const token = JSON.parse(localStorage.getItem("token"));
+  const [allData, setAllData] = useState("");
+  const [isOpenDelete, setOpenDelete] = useState(false);
+  const [id, setId] = useState("");
   const [isRefresh, setRefresh] = useState(false);
-  const [allData, setAllData] = useState([]);
-  const [isLoader, setIsLoader] = useState(false);
-  const [searchText, setSearchText] = useState("");
-  const [Id, setId] = useState(null);
-  const [openDelete, setOpenDelete] = useState(false);
-  const [openPopup, setOpenPopup] = useState(false);
-  const [previewData, setPreviewData] = useState({});
-  const visiblePageCount = 10;
-  const [token, setToken] = useState(JSON.parse(localStorage.getItem("ad_token"))  || null)
+  const [data, setData] = useState([]);
 
-  // console.log(previewData);
-  const refreshdata = () => {
+  const refreshData = () => {
     setRefresh(!isRefresh);
   };
-  // delete func ----
-  const handleDelete = (del_id) => {
-    setId(del_id);
+
+  function openModal(id) {
+    setId(id);
     setOpenDelete(true);
-  };
-
-  const closeDeleteModal = () => {
+  }
+  function closeModal() {
     setOpenDelete(false);
-  };
+  }
 
-  // handle search ----
-  const handleSearchInput = (e) => {
-    setSearchText(e.target.value);
-    searchDataFunc(e.target.value);
-  };
-
-  const handleSearch = () => {
-    if (searchText) {
-      searchDataFunc(searchText.trim());
-    }
-  };
-  const handleKeyDown = (e) => {
-    console.log("Pressed key:", e.key);
-    if (e.key === "Backspace") {
-      // e.preventDefault(); // Prevent the default action
-      searchDataFunc(searchText);
-    }
-  };
-  const handleClearSearch = () => {
-    refreshdata();
-    setSearchText("");
-  };
-  const searchDataFunc = (search_cate) => {
-    const options = {
+  useEffect(() => {
+    defaultUser();
+  }, [isRefresh]);
+  const defaultUser = () => {
+    const option = {
       method: "GET",
-      url: `/api/adminauth/all-users?search=${search_cate}`,
+      url: "http://localhost:5000/api/adminauth/getalluser",
       headers: {
-        Authorization: token,
-        "Content-Type": "multipart/form-data",
-      },
-    };
-    axios
-      .request(options)
-      .then((response) => {
-        console.log(response?.data);
-        if (response.status === 200) {
-          setAllData(response?.data);
-        } else {
-          return;
-        }
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  };
-
-  // preview modal ----
-  const handlePreview = async (prev_id) => {
-    setIsLoader(true);
-    try {
-      const res = await axios.get(`/api/adminauth/getUserById/${prev_id}`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token,
-        },
-      });
-      if (res.data?.success) {
-        // console.log(res.data.user);
-        setOpenPopup(true);
-        setPreviewData(res.data?.user);
-        setIsLoader(false);
-      } else {
-        setIsLoader(false);
-        return;
-      }
-    } catch (error) {
-      setIsLoader(false);
-      console.error(error);
-    }
-  };
-  const closePreviewModal = () => {
-    setOpenPopup(false);
-  };
-
-  // get all data ----
-  const getAllData = (pageNo) => {
-    setIsLoader(true);
-    const options = {
-      method: "GET",
-      url: `/api/adminauth/all-users?page=${pageNo}&limit=${visiblePageCount}`,
-      headers: {
-        Authorization: token,
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
     };
     axios
-      .request(options)
-      .then((res) => {
-        console.log(res);
-        if (res?.data?.success) {
-          setIsLoader(false);
-          setAllData(res?.data);
-        } else {
-          setIsLoader(false);
-          return;
-        }
+      .request(option)
+      .then((response) => {
+        setAllData(response?.data?.data);
+        console.log(response?.data?.data, "mera");
       })
       .catch((error) => {
-        setIsLoader(false);
-        console.error("Error:", error);
+        console.log(error);
       });
   };
+
   useEffect(() => {
-    // getAllData(1);
+    handleToggleBlocked();
   }, [isRefresh]);
 
-  const handleToggleBlocked = async (userId, isBlocked) => {
+  const handleToggleBlocked = async (id, isBlocked) => {
+
     if (isBlocked === undefined) return;
-    setIsLoader(true);
+
+    const updatedItems = data.map((item) => {
+      if (item._id === id) {
+        return { ...item, isBlocked: !isBlocked };
+      }
+      return item;
+    });
+    setData(updatedItems);
+
     try {
       const res = await axios.put(
-        `/api/auth/edit-user/${userId}`,
+        `http://localhost:5000/api/userauth/update/${id}`,
         { isBlocked: !isBlocked },
         {
-          headers: { "Content-Type": "application/json", Authorization: token },
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         }
       );
 
       if (res.data?.success) {
-        refreshdata()
         return;
       } else {
         console.error("Toggle blocked request failed.");
+        setData(data);
+        toast.success("User Blocked")
       }
     } catch (error) {
       console.error("Toggle blocked request failed:", error);
-    } finally {
-      setIsLoader(false);
+      setData(data);
     }
-
-    // console.log(userId, { isBlocked: !isBlocked });
   };
+
   return (
     <>
-      {isLoader && <Loader />}
+      {/* {isLoader && <Loader />} */}
+      <ToastContainer autoClose={1000} />
       <section className="w-full">
         <div className=" mx-auto">
-          <div className="rounded-[10px] bg-white py-[20px] flexBetween flex-col md:flex-row gap-3 px-[20px] mt-[20px] lg:mt-0">
-            <p className=" text-[22px] font-semibold">User list</p>
-            <div className="flexCenter gap-x-7 lg:gap-x-5 md:flex-auto flex-wrap gap-y-3 md:justify-end">
-              <div className="border border-primary  bg-[#302f2f82]] flexCenter h-[32px] pl-[10px] md:w-auto w-full">
-                <input
-                  type="text"
-                  className="input_search"
-                  value={searchText}
-                  onChange={handleSearchInput}
-                  onKeyDown={handleKeyDown}
-                  placeholder="Search by name, contact, email."
-                />
-                {searchText !== "" ? (
-                  <button
-                    className="clear_search_btn"
-                    onClick={handleClearSearch}
-                  >
-                    <CloseIcon />
-                  </button>
-                ) : (
-                  ""
-                )}
-                <button className="search_btn" onClick={handleSearch}>
-                  Search
-                </button>
-              </div>
-            </div>
+          <div className="mt-2 sm:mt-2 lg:mt-3 xl:mt-4 2xl:mt-7 flex justify-between items-center 2xl:px-10 border mx-5 lg:mx-8 bg-white rounded-lg 2xl:h-[100px] xl:h-[70px] lg:h-[60px] md:h-[50px] sm:h-[45px] h-[45px]  xl:px-8 lg:px-5 md:px-4 sm:px-4 px-4">
+            <h2 className="font-semibold custom_heading_text">User List </h2>
           </div>
-          <div className="">
-            <div className="outer_table">
-              <table className="w-full min-w-[640px] table-auto mt-[20px] ">
-                <thead className="">
-                  <tr className=" ">
-                    {headItems.map((items, inx) => (
-                      <th className="table_head" key={inx}>
-                        <p className="block text-[13px] font-medium uppercase whitespace-nowrap text-[#72727b]">
-                          {items}
-                        </p>
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {Array.isArray(allData?.users) &&
-                    allData?.users?.length > 0 &&
-                    allData?.users?.map((items, index) => (
-                      <tr key={index}>
-                        <td className="table_data">{index + 1}</td>
-                        <td className="table_data capitalize">
-                          {items?.fullname}
-                        </td>
-                        <td className="table_data">{items?.mobile} </td>
-                        <td className="table_data">{items?.email}</td>
-                        <td className="table_data">
-                          <Switch
-                            checked={items?.isBlocked}
-                            onChange={() =>
-                              handleToggleBlocked(items?._id, items?.isBlocked)
-                            }
-                            className={`${
-                              items?.isBlocked ? "bg-primary" : "bg-gray-200"
-                            } relative inline-flex h-6 w-11 items-center rounded-full`}
-                          >
-                            <span className="sr-only">
-                              Enable notifications
-                            </span>
-                            <span
-                              className={`${
-                                items?.isBlocked
-                                  ? "translate-x-6"
-                                  : "translate-x-1"
-                              } inline-block h-4 w-4 transform rounded-full bg-white transition`}
-                            />
-                          </Switch>
-                        </td>
-                        <td className="table_data">
-                          <div className="table_btn_div">
-                            {/* <button
-                              className="secondary_btn"
-                              onClick={() => handlePreview(items?._id)}
-                            >
-                              Preview
-                            </button> */}
-                            <button
-                              className="delete_btn"
-                              onClick={() => handleDelete(items?._id)}
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        </td>
+          <div className=" flex mx-5 lg:mx-8  overflow-x-auto ">
+            <div className="  w-full ">
+              <div className="overflow-y-scroll  ">
+                <div className="h-[300px] xl:h-[400px]">
+                  <table className="w-[1500px] lg:w-[150%] xl:w-[100%] border bg-white rounded-md mt-5 p-10">
+                    <thead className="sticky-header">
+                      <tr className="w-full bg-coolGray-200 text-gray-400 text-start flex  border custom_table_text">
+                        <th className="w-[9%] text-start my-auto py-2 sm:py-2 md:py-2 lg:py-3 xl:py-4 2xl:py-5 p-1">
+                          <p>S.NO</p>
+                        </th>
+                        <th className="w-3/12 text-start my-auto py-2 sm:py-2 md:py-2 lg:py-3 xl:py-4 2xl:py-5 ">
+                          <p>Name</p>
+                        </th>
+                        <th className="w-1/12 text-start my-auto py-2 sm:py-2 md:py-2 lg:py-3 xl:py-4 2xl:py-5 ">
+                          <p>Age</p>
+                        </th>
+                        <th className="w-2/12 text-start my-auto py-2 sm:py-2 md:py-2 lg:py-3 xl:py-4 2xl:py-5 ">
+                          <p>Contact.No</p>
+                        </th>
+                        <th className="w-3/12 text-start my-auto py-2 sm:py-2 md:py-2 lg:py-3 xl:py-4 2xl:py-5 ">
+                          <p>Email</p>
+                        </th>
+                        <th className="w-2/12 text-start my-auto py-2 sm:py-2 md:py-2 lg:py-3 xl:py-4 2xl:py-5 ">
+                          <p>Block/Unblock</p>
+                        </th>
+                        <th className="w-2/12 text-start my-auto py-2 sm:py-2 md:py-2 lg:py-3 xl:py-4 2xl:py-5 ">
+                          <p>Action</p>
+                        </th>
                       </tr>
-                    ))}
-                </tbody>
-              </table>
-            </div>
-            {Array.isArray(allData?.users) && allData?.users?.length === 0 && (
-              <div className="no_data">
-                <p className="text-[18px] fontsemibold">No data</p>
+                    </thead>
+
+                    <tbody className="w-full">
+                      {Array.isArray(allData) &&
+                        allData.map((item, index) => (
+                          <tr
+                            key={index}
+                            className="p-2 text-start flex xl:text-[14px] lg:text-[12px] md:text-[14px] sm:text-[13px] text-[10px]"
+                          >
+                            <td className=" p-2 w-1/12">{index + 1}</td>
+                            <td className="  p-2  w-3/12 capitalize">
+                              {item.name}
+                            </td>
+                            <td className="  w-1/12 p-2 ">{item.age}</td>
+                            <td className="  w-2/12 p-2 ">{item.contact}</td>
+                            <td className="  w-3/12 p-2 ">{item.email}</td>
+                            <td className="  w-2/12 p-2 ">
+                              {" "}
+                              <Switch
+                                checked={item?.isBlocked}
+                                onChange={() =>
+                                  handleToggleBlocked(
+                                    item?._id,
+                                    item?.isBlocked
+                                  )
+                                }
+                                className={`${
+                                  item?.isBlocked ? "bg-red-800" : "bg-gray-200"
+                                } relative inline-flex h-6 w-11 items-center rounded-full`}
+                              >
+                                <span className="sr-only">
+                                  Enable notifications
+                                </span>
+                                <span
+                                  className={`${
+                                    item?.isBlocked
+                                      ? "translate-x-6"
+                                      : "translate-x-1"
+                                  } inline-block h-4 w-4 transform rounded-full bg-white transition`}
+                                />
+                              </Switch>
+                            </td>
+
+                            <td className="w-2/12">
+                              {" "}
+                              <button
+                                type="button"
+                                onClick={() => openModal(item?._id)}
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  strokeWidth={1.5}
+                                  stroke="currentColor"
+                                  className="w-4 h-4 sm:w-[18px] sm:h-[18px] md:w-5 md:h-5 lg:w-5 lg:h-5 xl:w-6 xl:h-6 2xl:w-8 2xl:h-8 text-red-800"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
+                                  />
+                                </svg>
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
+
+                  <hr />
+                </div>
               </div>
-            )}
+            </div>
           </div>
-
-          {allData?.totalPages > 1 && (
-            <Pagination
-              currentpage={allData?.currentPage}
-              totalCount={allData?.totalPages}
-              visiblePageCount={visiblePageCount}
-              getAllData={getAllData}
-            />
-          )}
+          ;
         </div>
+        <div className=""></div>
       </section>
-
-      {/*---------- Delete popup---------- */}
-      <Transition appear show={openDelete} as={Fragment}>
-        <Dialog as="div" className="relative z-[11]" onClose={closeDeleteModal}>
+      <Transition appear show={isOpenDelete} as={Fragment}>
+        <Dialog as="div" className="relative z-10" onClose={() => {}}>
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -308,7 +220,7 @@ const User = () => {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <div className="fixed inset-0 bg-black/70 bg-opacity-25" />
+            <div className="fixed inset-0 bg-black bg-opacity-25" />
           </Transition.Child>
 
           <div className="fixed inset-0 overflow-y-auto">
@@ -322,68 +234,17 @@ const User = () => {
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <Dialog.Panel className="w-full max-w-[500px] transform overflow-hidden rounded-2xl bg-white 2xl:py-10 2xl:px-12 px-8 py-8  text-left align-middle shadow-xl transition-all">
+                <Dialog.Panel className="w-[90%] sm:w-full sm:max-w-[500px] transform overflow-hidden rounded-2xl bg-white p-4  sm:px-8 lg:px-8 2xl:p-10 text-left align-middle shadow-xl transition-all">
                   <Dialog.Title
                     as="h3"
-                    className="xl:text-[20px] text-[18px] font-medium leading-6 text-gray-900"
+                    className="custom_heading_text font-semibold leading-6 text-gray-900 mt lg:mt-5"
                   >
-                    Delete user
+                    Are You Sure! Want to Delete?
                   </Dialog.Title>
                   <DeleteUser
-                    closeModal={closeDeleteModal}
-                    refreshdata={refreshdata}
-                    deleteId={Id}
-                    token={token}
-                  />
-                </Dialog.Panel>
-              </Transition.Child>
-            </div>
-          </div>
-        </Dialog>
-      </Transition>
-
-      {/*---------- Preview popup---------- */}
-      <Transition appear show={openPopup} as={Fragment}>
-        <Dialog
-          as="div"
-          className="relative z-[11]"
-          onClose={closePreviewModal}
-        >
-          <Transition.Child
-            as={Fragment}
-            enter="ease-out duration-300"
-            enterFrom="opacity-0"
-            enterTo="opacity-100"
-            leave="ease-in duration-200"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0"
-          >
-            <div className="fixed inset-0 bg-black/70 bg-opacity-25" />
-          </Transition.Child>
-
-          <div className="fixed inset-0 overflow-y-auto">
-            <div className="flex min-h-full items-center justify-center p-4 text-center">
-              <Transition.Child
-                as={Fragment}
-                enter="ease-out duration-300"
-                enterFrom="opacity-0 scale-95"
-                enterTo="opacity-100 scale-100"
-                leave="ease-in duration-200"
-                leaveFrom="opacity-100 scale-100"
-                leaveTo="opacity-0 scale-95"
-              >
-                <Dialog.Panel className="w-full lg:max-w-[900] md:max-w-[800px] sm:max-w-[500px] transform overflow-hidden rounded-2xl bg-white 2xl:py-10 px-8 py-8 2xl:px-12 text-left align-middle shadow-xl transition-all">
-                  <div className="flex justify-end items-end ">
-                    <button
-                      className=" cursor-pointer"
-                      onClick={closePreviewModal}
-                    >
-                      <CloseIcon />
-                    </button>
-                  </div>
-                  <PreviewModal
-                    closeModal={closePreviewModal}
-                    previewData={previewData}
+                    closeModal={closeModal}
+                    refreshData={refreshData}
+                    id={id}
                   />
                 </Dialog.Panel>
               </Transition.Child>
