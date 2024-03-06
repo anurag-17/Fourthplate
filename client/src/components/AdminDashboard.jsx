@@ -87,8 +87,8 @@ const AdminDashboard = () => {
                   className={`pl-6 py-3 mx-5 rounded-md  flex gap-x-3 items-center cursor-pointer  transition-colors medium-16 bg-[#0f2439] 
                                     ${
                                       item.id === ComponentId
-                                        ? "bg-theme-secondary text-primary"
-                                        : "hover:bg-theme-secondary hover:text-primary hover:rounded-md "
+                                        ? "bg-theme-secondary text-green-800"
+                                        : "hover:bg-theme-secondary hover:text-green-800 hover:rounded-md "
                                     }  `}
                   onClick={() => handleClick(item.id, item.url)}
                 >
@@ -101,7 +101,7 @@ const AdminDashboard = () => {
           </div>
 
           <div
-            className={`pl-6 py-3 mx-5 rounded text-center cursor-pointer my-3 flex items-center transition-colors dash-menu gap-x-3  medium-16 hover:bg-theme-secondary hover:text-primary hover:rounded-md  bg-[#0f2439] }`}
+            className={`pl-6 py-3 mx-5 rounded text-center cursor-pointer my-3 flex items-center transition-colors dash-menu gap-x-3  medium-16 hover:bg-theme-secondary hover:text-green-800 hover:rounded-md  bg-[#0f2439] }`}
             onClick={handleSignout}
           >
             {/* <LogoutIcon /> */}

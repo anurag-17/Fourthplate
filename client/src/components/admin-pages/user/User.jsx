@@ -7,8 +7,10 @@ import CloseIcon from "../Svg/CloseIcon";
 import Pagination from "../../pagination/Pagination";
 import Loader from "../../loader/Index";
 import { ToastContainer, toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const User = () => {
+  const navigate = useNavigate();
   const token = JSON.parse(localStorage.getItem("token"));
   const [allData, setAllData] = useState("");
   const [isOpenDelete, setOpenDelete] = useState(false);
@@ -56,7 +58,6 @@ const User = () => {
   }, [isRefresh]);
 
   const handleToggleBlocked = async (id, isBlocked) => {
-
     if (isBlocked === undefined) return;
 
     const updatedItems = data.map((item) => {
@@ -80,11 +81,11 @@ const User = () => {
       );
 
       if (res.data?.success) {
-        return;
+        defaultUser();
+        toast.success("User Updated Successfully ");
       } else {
         console.error("Toggle blocked request failed.");
         setData(data);
-        toast.success("User Blocked")
       }
     } catch (error) {
       console.error("Toggle blocked request failed:", error);

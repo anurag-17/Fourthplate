@@ -48,6 +48,7 @@ body {
   .medium-16 {
     @apply text-[16px] font-[600];
   }
+
   .medium-14 {
     @apply text-[14px] font-[600];
   }
@@ -57,31 +58,37 @@ body {
   }
 
   .bold-32 {
-    @apply 2xl:text-[30px] xl:text-[28px] md:text-[26px] text-[24px]  font-[700] leading-[120%];
+    @apply 2xl:text-[30px] xl:text-[28px] md:text-[26px] text-[24px] font-[700] leading-[120%];
   }
 
   .login-input {
-    @apply w-full px-4 py-2 2xl:h-[50px]  h-[48px] border border-[#E4E4E4] bg-white rounded-[3px] text-[#262628] text-[15px] font-[400px] leading-normal focus-visible:outline-none placeholder:text-[14px] placeholder:text-[#262628];
+    @apply w-full px-4 py-2 2xl:h-[50px] h-[48px] border border-[#E4E4E4] bg-white rounded-[3px] text-[#262628] text-[15px] font-[400px] leading-normal focus-visible:outline-none placeholder:text-[14px] placeholder:text-[#262628];
   }
 
   .login_button {
-    @apply w-full bg-primary font-medium text-white p-2 rounded-lg  hover:bg-white hover:text-primary hover:border hover:border-[gray-300] h-[50px]  transition-all ease-in-out delay-75 duration-700 hover:border-primary;
+    @apply w-full bg-green-800 font-medium text-white p-2 rounded-lg hover:bg-white hover:text-green-800 hover:border hover:border-[gray-300] h-[50px] transition-all ease-in-out delay-75 duration-700 hover:border-green-800;
   }
+
   .input_search {
     @apply focus-visible:outline-none border-none w-full rounded-[5px] font-normal text-[15px] text-[#6a6969] placeholder:text-[11px];
   }
+
   .search_btn {
-    @apply px-6  text-[12px]  h-[32px] hover:text-[#f3f3f3] bg-primary text-white font-medium; 
+    @apply px-6 text-[12px] h-[32px] hover:text-[#f3f3f3] bg-green-800 text-white font-medium;
   }
+
   .clear_search_btn {
-    @apply px-1 rounded text-[12px] text-[gray] border border-[#6a696917] hover:text-black mr-1 ;
+    @apply px-1 rounded text-[12px] text-[gray] border border-[#6a696917] hover:text-black mr-1;
   }
+
   .outer_table {
-    @apply rounded-[10px] bg-white py-[30px] flexBetween mt-[20px] p-6 overflow-x-scroll w-full ;
+    @apply rounded-[10px] bg-white py-[30px] flexBetween mt-[20px] p-6 overflow-x-scroll w-full;
   }
+
   .table_head {
     @apply py-3 px-5 text-left bg-white;
   }
+
   .table_data {
     @apply text-[14px] font-[400] py-3 px-5;
   }
@@ -89,21 +96,25 @@ body {
   .table_btn_div {
     @apply flex flex-col md:flex-row items-center gap-2 gap-x-5;
   }
+
   .no_data {
     @apply py-4 px-4 w-full flex flex-col items-center justify-center border border-[#f3f3f3] bg-white rounded-[20px] mt-[10px];
   }
 
   .form_col {
-    @apply grid grid-cols-2  py-[5px];
+    @apply grid grid-cols-2 py-[5px];
   }
+
   .form_label_head {
     @apply 2xl:text-[16px] text-[15px] font-[400] leading-tight capitalize;
   }
+
   .form_info {
     @apply 2xl:text-[16px] text-[15px] font-[500] leading-tight;
   }
+
   .form_heading {
-    @apply whitespace-nowrap capitalize leading-tight lg:text-[18px]  text-[16px] font-medium;
+    @apply whitespace-nowrap capitalize leading-tight lg:text-[18px] text-[16px] font-medium;
   }
 
   .delete_btn {
@@ -111,12 +122,11 @@ body {
   }
 
   .primary_btn {
-    @apply px-4 text-[13px] border rounded text-white
-    hover:bg-white hover:text-primary py-1 md:py-2 bg-primary focus-visible:outline-none w-full md:w-auto;
+    @apply px-4 text-[13px] border rounded text-white hover:bg-white hover:text-primary py-1 md:py-2 bg-green-800 focus-visible:outline-none w-full md:w-auto;
   }
+
   .secondary_btn {
-    @apply px-4 text-[13px] border border-primary rounded hover:text-white
-    bg-white text-primary py-1 md:py-2 hover:bg-primary focus-visible:outline-none w-full md:w-auto;
+    @apply px-4 text-[13px] border border-primary rounded hover:text-white bg-white text-primary py-1 md:py-2 hover:bg-green-800 focus-visible:outline-none w-full md:w-auto;
   }
 
   button {
@@ -131,15 +141,18 @@ body {
 }
 
 .star {
-  color: gray; /* Default color */
+  color: gray;
+  /* Default color */
 }
 
 .filled {
-  color: #0cae3a; /* Filled star color */
+  color: #0cae3a;
+  /* Filled star color */
 }
 
 .half-filled {
-  color: #0cae3a;/* Half-filled star color */
+  color: #0cae3a;
+  /* Half-filled star color */
 }
 
 
@@ -150,6 +163,55 @@ body {
 
 /* Hide scrollbar for IE, Edge and Firefox */
 .hide-scrollbar {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 25px;
+  width: 25px;
+  left: 0px;
+  bottom: 0px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked+.slider {
+  background-color: #2196F3;
+}
+
+input:focus+.slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked+.slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
 }
