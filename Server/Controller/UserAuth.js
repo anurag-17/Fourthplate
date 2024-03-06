@@ -106,7 +106,7 @@ exports.addUser = async (req, res) => {
   }
 };
 exports.updateUser = async (req, res) => {
-  const id = req.params; // Assuming the user's ID is passed as a URL parameter
+  const {id} = req.params; // Assuming the user's ID is passed as a URL parameter
   let updateData = req.body; // The updated information is expected to be in the request body
 
   // Remove the email field from the updateData object if it exists
