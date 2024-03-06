@@ -30,7 +30,7 @@ const StatusMessage = {
 };
 exports.addAdmin = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, fullname, password } = req.body;
 
     if (!email || !password) {
       return res
@@ -40,7 +40,7 @@ exports.addAdmin = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const adminData = new Admin({ email, password: hashedPassword });
+    const adminData = new Admin({ email, password: hashedPassword, fullname });
 
     const result = await adminData.save();
 
@@ -96,6 +96,7 @@ exports.adminLogin = async (req, res) => {
 
       return res.status(HttpStatus.OK).json({
         message: `Welcome ${admin.email}`,
+        data: admin,
         token: token,
         success: true,
       });
