@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const { generateToken, verifyToken } = require("../Utils/jwt");
 const Admin = require("../Model/Admin");
+const User = require("../Model/User");
 const sendEmail = require("../Utils/SendEmail");
 const jwt = require("jsonwebtoken");
 const HttpStatus = {
@@ -290,7 +291,7 @@ exports.resetPassword = async (req, res) => {
   }
 };
 exports.getAdminById = async (req, res) => {
-  const { id } = req.user._id;
+  const id  = req.user._id;
 
   try {
     const user = await Admin.findById(id);
@@ -315,4 +316,7 @@ exports.getAdminById = async (req, res) => {
       error: error.message,
     });
   }
-}
+};
+// exports.counts = async (req, res) => {
+  
+// }
