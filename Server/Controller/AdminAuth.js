@@ -289,3 +289,30 @@ exports.resetPassword = async (req, res) => {
       .json({ success: false, message: StatusMessage.SERVER_ERROR });
   }
 };
+exports.getAdminById = async (req, res) => {
+  const { id } = req.user._id;
+
+  try {
+    const user = await Admin.findById(id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found.",
+      });
+    }
+
+    // Respond with the found user
+    return res.status(200).json({
+      success: true,
+      user: user,
+    });
+  } catch (error) {
+    // Handle any errors, such as invalid ID format
+    return res.status(500).json({
+      success: false,
+      message: "Server error occurred while retrieving the user.",
+      error: error.message,
+    });
+  }
+}

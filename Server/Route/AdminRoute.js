@@ -1,5 +1,5 @@
 const express = require("express")
-const { addAdmin, adminLogin, updatePassword, logout, forgotPwd, resetPassword } = require("../Controller/AdminAuth")
+const { addAdmin, adminLogin, updatePassword, logout, forgotPwd, resetPassword, getAdminById } = require("../Controller/AdminAuth")
 const { isAuthJWT, authorizeRoles } = require("../Utils/jwt")
 const { getUserById, getAllUsersWithPagination } = require("../Controller/UserAuth")
 const router = express.Router()
@@ -12,5 +12,6 @@ router.route("/forgotPassword").post(forgotPwd)
 router.route("/resetPassword").post(resetPassword)
 
 router.route("/getauser/:id").get(isAuthJWT, authorizeRoles("Admin"),getUserById)
+router.route("/getAdminById").get(isAuthJWT, authorizeRoles("Admin"),getAdminById)
 router.route("/getalluser").get(isAuthJWT, authorizeRoles("Admin"),getAllUsersWithPagination)
 module.exports = router;
