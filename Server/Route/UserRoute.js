@@ -13,7 +13,7 @@ router.route("/deletuser/:id").delete(isAuthJWT,deleteUser)
 router.route("/updatePassword").put(isAuthJWT, authorizeRoles("User"),updateUserPassword)
 router.route("/update/:id").put(isAuthJWT,updateUser)
 
-router.route("userData").get(isAuthJWT,userData)
+router.route("/userData").get(userData)
 
 // router.route("/login").get(adminLogin)
 // router.route("/updatePass").post(isAuthJWT,authorizeRoles("Admin"),updatePassword)

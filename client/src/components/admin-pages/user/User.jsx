@@ -17,6 +17,7 @@ const User = () => {
   const [id, setId] = useState("");
   const [isRefresh, setRefresh] = useState(false);
   const [data, setData] = useState([]);
+  const [isLoader, setLoder] = useState(false);
 
   const refreshData = () => {
     setRefresh(!isRefresh);
@@ -53,10 +54,6 @@ const User = () => {
       });
   };
 
-  useEffect(() => {
-    handleToggleBlocked();
-  }, [isRefresh]);
-
   const handleToggleBlocked = async (id, isBlocked) => {
     if (isBlocked === undefined) return;
 
@@ -83,6 +80,7 @@ const User = () => {
       if (res.data?.success) {
         defaultUser();
         toast.success("User Updated Successfully ");
+        setLoder();
       } else {
         console.error("Toggle blocked request failed.");
         setData(data);
@@ -93,14 +91,45 @@ const User = () => {
     }
   };
 
+  const handleDownload = async () => {
+    try {
+      const response = await axios.get(
+        "http://34.242.24.155:5000/api/userauth/userData",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response.status === 200) {
+        toast.success("Download Start");
+        window.open(
+          "http://34.242.24.155:5000/api/userauth/userData",
+          "_blank"
+        );
+      } else {
+        toast.error("Download failed.");
+      }
+    } catch (error) {
+      console.error("Download failed:", error);
+    }
+  };
+
   return (
     <>
-      {/* {isLoader && <Loader />} */}
+      {isLoader && <Loader />}
       <ToastContainer autoClose={1000} />
       <section className="w-full">
         <div className=" mx-auto">
           <div className="mt-2 sm:mt-2 lg:mt-3 xl:mt-4 2xl:mt-7 flex justify-between items-center 2xl:px-10 border mx-5 lg:mx-8 bg-white rounded-lg 2xl:h-[100px] xl:h-[70px] lg:h-[60px] md:h-[50px] sm:h-[45px] h-[45px]  xl:px-8 lg:px-5 md:px-4 sm:px-4 px-4">
             <h2 className="font-semibold custom_heading_text">User List </h2>
+            <button
+              onClick={handleDownload}
+              className="border p-1 rounded-md px-2 border-green-600 text-green-800 hover:border-green-100 hover:bg-green-100"
+            >
+              Download
+            </button>
           </div>
           <div className=" flex mx-5 lg:mx-8  overflow-x-auto ">
             <div className="  w-full ">

@@ -42,7 +42,7 @@ const Login = () => {
         toast.error("Login failed please try later!");
       }
     } catch (error) {
-      console.error("Error during login:", error);
+      toast.error("Error during login:", error);
       toast.error(error?.response?.data?.message);
     }
   };
