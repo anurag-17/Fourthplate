@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 const { generateToken, verifyToken } = require("../Utils/jwt");
 const User = require("../Model/User");
 const sendEmail = require("../Utils/SendEmail");
+const CsvParser = require("json2csv").Parser;
 const HttpStatus = {
   OK: 200,
   INVALID: 201,
@@ -467,3 +468,26 @@ exports.getAllUsersWithPagination = async (req, res) => {
       });
   }
 };
+
+exports.userData = async (req, res) => {
+  try {
+    let users = [];
+
+    var invitationData = await User.find({});
+
+    invitationData.forEach((user) => {
+      const { name, email, contact, age, gender, isBlocked} = user;
+      users.push({ name, email, contact, age, gender, isBlocked });
+    });
+    const fields = [ "name", "email", "contact", "age", "gender", "isBlocked" ];
+    const csvParser = new CsvParser({ fields });
+    const data = csvParser.parse(users);
+
+    res.setHeader("Content-Type", "text/csv");
+    res.setHeader("Content-Disposition", "attachment: filename=UserData.csv");
+
+    res.status(200).end(data);
+  } catch (error) {
+    res.status(400).json({ msg: error.message, status: false });
+  }
+}
