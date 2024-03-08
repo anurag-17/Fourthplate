@@ -2,6 +2,7 @@ const bcrypt = require("bcrypt");
 const { generateToken, verifyToken } = require("../Utils/jwt");
 const Admin = require("../Model/Admin");
 const User = require("../Model/User");
+const Event = require("../Model/Event")
 const sendEmail = require("../Utils/SendEmail");
 const jwt = require("jsonwebtoken");
 const HttpStatus = {
@@ -318,6 +319,12 @@ exports.getAdminById = async (req, res) => {
     });
   }
 };
-// exports.counts = async (req, res) => {
-  
-// }
+exports.counts = async (req, res) => {
+  try {
+    const eventCount = await Event.countDocuments();
+    const userCount = await User.countDocuments();
+    res.json({ eventCount, userCount });
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
