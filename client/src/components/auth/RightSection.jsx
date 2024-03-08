@@ -1,5 +1,6 @@
 import React from "react";
-import bgImg from "../../assets/login.svg"
+import bgImg from "../../assets/FOURTHPLATE_COVER.png"
+
 
 
 const RightSection = () => {

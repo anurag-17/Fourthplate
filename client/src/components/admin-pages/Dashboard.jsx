@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
@@ -13,11 +13,16 @@ import UsersIcon from "./Svg/UsersIcon";
 const Dashboard = () => {
   const token = JSON.parse(localStorage.getItem("token"));
   const navigate = useNavigate();
+  const [count, setCount] = useState();
+  
+useEffect(() => {
+  countData()
+}, []);
 
   const handleSignout = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:5000/api/adminauth/logout",
+        "http://34.242.24.155:5000/api/adminauth/logout",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -38,7 +43,23 @@ const Dashboard = () => {
       toast.error(error?.response?.data?.message || "Invalid token !");
     }
   };
-
+const countData = async()=>{
+  try {
+    const res = await axios.get(
+      "http://34.242.24.155:5000/api/adminauth/counts",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    // console.log(res?.data); 
+    setCount(res?.data)
+  } catch (error) {
+    console.error("Error occurred:", error);
+  }
+}
   return (
     <>
       <section className>
@@ -109,7 +130,7 @@ const Dashboard = () => {
               </div>
               <div className="">
                 <h6 className="capitalize text-[15px]">Total Users</h6>
-                <h6 className="capitalize text-[16px] font-semibold pt-1">4</h6>
+                <h6 className="capitalize text-[16px] font-semibold pt-1">{count?.userCount}</h6>
               </div>
             </div>
             <div className="col-span-1 bg-white px-5 py-4 rounded flex items-center gap-5">
@@ -120,7 +141,7 @@ const Dashboard = () => {
               <div className="">
                 <h6 className="capitalize text-[15px]">Total Events</h6>
                 <h6 className="capitalize text-[16px] font-semibold pt-2">
-                  10
+                  {count?.eventCount}
                 </h6>
               </div>
             </div>

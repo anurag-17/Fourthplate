@@ -42,7 +42,8 @@ const Login = () => {
         toast.error("Login failed please try later!");
       }
     } catch (error) {
-      toast.error("Error during login:", error);
+      console.log(error);
+      // toast.error("Error during login:", error);
       toast.error(error?.response?.data?.message);
     }
   };
