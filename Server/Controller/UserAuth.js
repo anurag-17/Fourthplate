@@ -49,7 +49,7 @@ exports.uploadImage = async (req, res, next) => {
 };
 exports.addUser = async (req, res) => {
   try {
-    const { name, email, password, contact,age, picture, gender } = req.body;
+    const { name, email, password, contact, age, picture, gender } = req.body;
 
     if (!name || !email || !password) {
       return res
@@ -107,38 +107,53 @@ exports.addUser = async (req, res) => {
   }
 };
 exports.updateUser = async (req, res) => {
-  const {id} = req.params; // Assuming the user's ID is passed as a URL parameter
-  let updateData = req.body; // The updated information is expected to be in the request body
+  const { id } = req.params;
+  let updateData = { ...req.body };
 
-  // Remove the email field from the updateData object if it exists
-  if (updateData.email) {
-    console.log("Email update request detected and ignored.");
+  // Remove the email and password fields from the updateData object if they exist
+  if (updateData.email || updateData.password) {
+    console.log("Email or password update request detected and ignored.");
     delete updateData.email;
     delete updateData.password;
   }
 
-  try {
-    const updatedUser = await User.findByIdAndUpdate(id, updateData, {
-      new: true,
-    });
 
-    if (!updatedUser) {
-      return res
-        .status(404)
-        .json({ success: false, message: "User not found." });
+  // Handle contact field update logic
+  if ('contact' in updateData && updateData.contact !== "" && updateData.contact !== null) {
+    // Check for duplicacy of contact value before updating
+    const doesExist = await User.findOne({ contact: updateData.contact, _id: { $ne: id } });
+    if (doesExist) {
+      return res.status(400).json({
+        success: false,
+        message: "Contact already exists. Please use a different contact.",
+      });
     }
-
-    // Return the updated user information
-    return res.status(200).json({ success: true, message: updatedUser });
-  } catch (error) {
-    // Handle possible errors
-    return res.status(500).json({
-      success: false,
-      message: "Server error occurred while updating the user.",
-      error: error.message,
-    });
   }
+
+  // Define a function to update the user to avoid repetition
+  const updateUserInDatabase = async () => {
+    try {
+      const updatedUser = await User.findByIdAndUpdate(id, updateData, { new: true });
+
+      if (!updatedUser) {
+        return res.status(404).json({ success: false, message: "User not found." });
+      }
+
+      // Return the updated user information
+      return res.status(200).json({ success: true, message: updatedUser });
+    } catch (error) {
+      // Handle possible errors
+      return res.status(500).json({
+        success: false,
+        message: "Server error occurred while updating the user.",
+        error: error.message,
+      });
+    }
+  };
+  // Update user in the database
+  return await updateUserInDatabase();
 };
+
 exports.updateUserPassword = async (req, res) => {
   const id = req.user._id; // The user's ID, assuming it's available from the authenticated user session
   const { oldPassword, newPassword } = req.body; // Client must send old and new passwords
@@ -283,7 +298,7 @@ exports.resetPassword = async (req, res) => {
 };
 // Delete user controller
 exports.deleteUser = async (req, res) => {
-  const {id} = req.params; // Assuming the user's ID is securely obtained from the authenticated session
+  const { id } = req.params; // Assuming the user's ID is securely obtained from the authenticated session
 
   try {
     // Attempt to delete the user by ID
@@ -377,6 +392,7 @@ exports.loginUser = async (req, res) => {
       user: {
         name: user.name,
         email: user.email,
+        userId: user._id,
       },
     });
   } catch (error) {
@@ -442,30 +458,30 @@ exports.getAllUsersWithPagination = async (req, res) => {
   const skip = (page - 1) * limit;
 
   try {
-      // Count the total number of users in the database
-      const totalUsers = await User.countDocuments();
+    // Count the total number of users in the database
+    const totalUsers = await User.countDocuments();
 
-      // Calculate total pages
-      const totalPages = Math.ceil(totalUsers / limit);
+    // Calculate total pages
+    const totalPages = Math.ceil(totalUsers / limit);
 
-      // Find users with limit and skip for pagination
-      const users = await User.find().skip(skip).limit(limit);
+    // Find users with limit and skip for pagination
+    const users = await User.find().skip(skip).limit(limit);
 
-      // Respond with users and pagination details
-      return res.status(200).json({
-          success: true,
-          count: users.length,
-          page,
-          totalPages,
-          data: users
-      });
+    // Respond with users and pagination details
+    return res.status(200).json({
+      success: true,
+      count: users.length,
+      page,
+      totalPages,
+      data: users,
+    });
   } catch (error) {
-      // Handle any errors that occur during fetching users
-      return res.status(500).json({
-          success: false,
-          message: "Server error occurred while retrieving users.",
-          error: error.message
-      });
+    // Handle any errors that occur during fetching users
+    return res.status(500).json({
+      success: false,
+      message: "Server error occurred while retrieving users.",
+      error: error.message,
+    });
   }
 };
 
@@ -476,10 +492,10 @@ exports.userData = async (req, res) => {
     var invitationData = await User.find({});
 
     invitationData.forEach((user) => {
-      const { name, email, contact, age, gender, isBlocked} = user;
+      const { name, email, contact, age, gender, isBlocked } = user;
       users.push({ name, email, contact, age, gender, isBlocked });
     });
-    const fields = [ "name", "email", "contact", "age", "gender", "isBlocked" ];
+    const fields = ["name", "email", "contact", "age", "gender", "isBlocked"];
     const csvParser = new CsvParser({ fields });
     const data = csvParser.parse(users);
 
@@ -490,4 +506,4 @@ exports.userData = async (req, res) => {
   } catch (error) {
     res.status(400).json({ msg: error.message, status: false });
   }
-}
+};

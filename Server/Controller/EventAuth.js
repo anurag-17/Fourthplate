@@ -200,7 +200,7 @@ exports.getEventById = async (req, res) => {
 // Get all events with pagination, search, and filters
 exports.getAllEvents = async (req, res) => {
     let { page = 1, limit = 10 } = req.query;
-    const { eventName, location, food, allowMember, coordinates, state, city, latitude, longitude, distance = 1} = req.body
+    const { eventName, location, food, allowMember, coordinates, state, city, latitude, longitude, distance = 30} = req.body
     page = parseInt(page);
     limit = parseInt(limit);
     const skip = (page - 1) * limit;
