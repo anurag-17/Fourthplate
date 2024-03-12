@@ -1,4 +1,4 @@
-import React, { Fragment,useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
@@ -11,34 +11,55 @@ import SignOutIcon from "./Svg/SignOutIcon";
 import UsersIcon from "./Svg/UsersIcon";
 
 const Dashboard = () => {
-  
+  const token = JSON.parse(localStorage.getItem("token"));
   const navigate = useNavigate();
-  const [token, setToken] = useState(JSON.parse(localStorage.getItem("ad_token"))  || null)
-
+  const [count, setCount] = useState();
+  
+useEffect(() => {
+  countData()
+}, []);
 
   const handleSignout = async () => {
     try {
-      const res = await axios.get(`/api/adminauth/logout`, {
-        headers: {
-          Authorization: token,
-          "Content-Type": "application/json",
-        },
-      });
+      const res = await axios.get(
+        "http://34.242.24.155:5000/api/adminauth/logout",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
       console.log(res);
       if (res?.data?.success) {
-        localStorage.removeItem("ad_token")
+        localStorage.removeItem("token");
         toast.success("Logout successfully !");
-        navigate("/login");
+        navigate("/login"); 
       } else {
         toast.error("Logout failed try again !");
       }
     } catch (error) {
-      // dispatch(removeToken());
       console.error("Error occurred:", error);
       toast.error(error?.response?.data?.message || "Invalid token !");
     }
   };
-
+const countData = async()=>{
+  try {
+    const res = await axios.get(
+      "http://34.242.24.155:5000/api/adminauth/counts",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    // console.log(res?.data); 
+    setCount(res?.data)
+  } catch (error) {
+    console.error("Error occurred:", error);
+  }
+}
   return (
     <>
       <section className>
@@ -49,10 +70,13 @@ const Dashboard = () => {
             </p>
             <p className="text-[20px] md:text-[22px] font-semibold leading-tight text-center mt-[30px] md:hidden block">
               Welcome to
-              <br/> Admin Dashboard
+              <br /> Admin Dashboard
             </p>
             <div className="flexCenter gap-x-7 lg:gap-x-5 md:flex-auto flex-wrap gap-y-3 md:justify-end">
-              <Menu as="div" className="relative text-left w-[50px] h-[50px] rounded-[50%] border p-1 flexCenter">
+              <Menu
+                as="div"
+                className="relative text-left w-[50px] h-[50px] rounded-[50%] border p-1 flexCenter"
+              >
                 <div>
                   <Menu.Button className="flexCenter w-full ">
                     <ProfileIcon className="ml-2 h-4 w-4 text-gray-700" />
@@ -73,16 +97,16 @@ const Dashboard = () => {
                     <div className="p-1 flex flex-col gap-4">
                       <Menu.Item>
                         <Link
-                          to="/change-password"
+                          to="/setting"
                           className="flex gap-x-3 hover:underline text-gray-700 rounded  text-sm group transition-colors items-center"
                         >
                           <PasswordIcon className="h-[20px] w-[20px] mr-2" />
-                          Change password
+                          Profile
                         </Link>
                       </Menu.Item>
                       <Menu.Item>
                         <div
-                        onClick={handleSignout}
+                          onClick={handleSignout}
                           className="flex gap-x-3 hover:underline text-gray-700 rounded  text-sm group transition-colors items-center"
                         >
                           <SignOutIcon />
@@ -100,29 +124,26 @@ const Dashboard = () => {
         <div className="px-[20px]">
           <div className="md:py-[30px] py-[20px] grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
             <div className="col-span-1 bg-white px-5 py-4 rounded flex items-center gap-5">
-              <div className="bg-primary h-[50px] w-[50px] flexCenter rounded-[6px]" > <UsersIcon /> </div>
+              <div className="bg-green-800 h-[50px] w-[50px] flexCenter rounded-[6px]">
+                {" "}
+                <UsersIcon />{" "}
+              </div>
               <div className="">
                 <h6 className="capitalize text-[15px]">Total Users</h6>
-                <h6 className="capitalize text-[16px] font-semibold pt-1">4</h6>
+                <h6 className="capitalize text-[16px] font-semibold pt-1">{count?.userCount}</h6>
               </div>
             </div>
-           < div className="col-span-1 bg-white px-5 py-4 rounded flex items-center gap-5">
-              <div className="bg-primary h-[50px] w-[50px] flexCenter rounded-[6px]" > <UsersIcon /> </div>
+            <div className="col-span-1 bg-white px-5 py-4 rounded flex items-center gap-5">
+              <div className="bg-green-800 h-[50px] w-[50px] flexCenter rounded-[6px]">
+                {" "}
+                <UsersIcon />{" "}
+              </div>
               <div className="">
                 <h6 className="capitalize text-[15px]">Total Events</h6>
                 <h6 className="capitalize text-[16px] font-semibold pt-2">
-                  10
+                  {count?.eventCount}
                 </h6>
               </div>
-            </div>
-          </div>
-
-          <div className=" md:py-[30px]  py-[20px]  bg-white relative">
-            <div className="w-[30%]">
-              {/* <img src={dash_img2} alt="welcome dashboard" className="w-full" /> */}
-            </div>
-            <div className="w-[30%]">
-              {/* <img src={dash_img} alt="welcome dashboard" className="w-full" /> */}
             </div>
           </div>
         </div>

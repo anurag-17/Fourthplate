@@ -9,9 +9,7 @@ const AdminDashboard = () => {
   const [ComponentId, setComponentId] = useState(0);
 
   const [showDrawer, setShowDrawer] = useState(false);
-  const [token, setToken] = useState(
-    JSON.parse(localStorage.getItem("ad_token")) || null
-  );
+
   const navigate = useNavigate();
 
   const handleClick = (id, url) => {
@@ -19,30 +17,30 @@ const AdminDashboard = () => {
     setShowDrawer(false);
   };
 
-  const handleSignout = async () => {
+  const token = JSON.parse(localStorage.getItem("token"));
 
+  const handleSignout = async () => {
     try {
-      const res = await axios.get(`/api/adminauth/logout`, {
-        headers: {
-          Authorization: token,
-          "Content-Type": "application/json",
-        },
-      });
+      const res = await axios.get(
+        "http://34.242.24.155:5000/api/adminauth/logout",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
       console.log(res);
       if (res?.data?.success) {
-        localStorage.removeItem("ad_token");
+        localStorage.removeItem("token");
         toast.success("Logout successfully !");
         navigate("/login");
       } else {
         toast.error("Logout failed try again !");
-        localStorage.removeItem("ad_token");
-        navigate("/login");
       }
     } catch (error) {
-      // dispatch(removeToken());
       console.error("Error occurred:", error);
-      localStorage.removeItem("ad_token");
-      navigate("/login");
+      toast.error(error?.response?.data?.message || "Invalid token !");
     }
   };
 
@@ -77,7 +75,7 @@ const AdminDashboard = () => {
           </div>
           <div className="">
             <div className="flex justify-center items-center whitespace-pre-wrap py-[20px]">
-              <h1 className="bold-32 text-center whitespace-nowrap ">
+              <h1 className="bold-32 text-center whitespace-nowrap text-xl">
                 Admin Dashboard
               </h1>
             </div>
@@ -89,8 +87,8 @@ const AdminDashboard = () => {
                   className={`pl-6 py-3 mx-5 rounded-md  flex gap-x-3 items-center cursor-pointer  transition-colors medium-16 bg-[#0f2439] 
                                     ${
                                       item.id === ComponentId
-                                        ? "bg-theme-secondary text-primary"
-                                        : "hover:bg-theme-secondary hover:text-primary hover:rounded-md "
+                                        ? "bg-theme-secondary text-green-800"
+                                        : "hover:bg-theme-secondary hover:text-green-800 hover:rounded-md "
                                     }  `}
                   onClick={() => handleClick(item.id, item.url)}
                 >
@@ -103,7 +101,7 @@ const AdminDashboard = () => {
           </div>
 
           <div
-            className={`pl-6 py-3 mx-5 rounded text-center cursor-pointer my-3 flex items-center transition-colors dash-menu gap-x-3  medium-16 hover:bg-theme-secondary hover:text-primary hover:rounded-md  bg-[#0f2439] }`}
+            className={`pl-6 py-3 mx-5 rounded text-center cursor-pointer my-3 flex items-center transition-colors dash-menu gap-x-3  medium-16 hover:bg-theme-secondary hover:text-green-800 hover:rounded-md  bg-[#0f2439] }`}
             onClick={handleSignout}
           >
             {/* <LogoutIcon /> */}

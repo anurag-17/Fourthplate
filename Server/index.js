@@ -11,13 +11,13 @@ require("dotenv").config();
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "500kb", extended: true }));
 app.use(bodyParser.urlencoded({ extended: true }));
-// const corsOptions = {
-//   origin: ["http://localhost:3000", "*"],
-//   credentials: true,
-// };
+const corsOptions = {
+  origin: ["http://localhost:3000", "http://34.242.24.155:5000","*"],
+  credentials: true,
+};
 
 // app.use(cors());
-app.use(cors({ origin: "*" }));
+app.use(cors(corsOptions));
 
 app.use('/api/adminauth', require('./Route/AdminRoute'));
 app.use('/api/userauth', require('./Route/UserRoute'))
@@ -142,7 +142,7 @@ if (process.env.NODE_ENV === "dev") {
 //   }
 // });
 
-const PORT = process.env.PORT || 5000; // Use 3000 if process.env.PORT is not defined
+const PORT = process.env.PORT || 4000;
 
 app.listen(PORT, () => {
   console.log(`Running on port ${PORT}`);

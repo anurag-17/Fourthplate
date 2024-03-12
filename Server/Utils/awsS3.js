@@ -3,10 +3,10 @@ const AWS = require('aws-sdk');
 AWS.config.update({
   accessKeyId: process.env.awsAccessKey,
   secretAccessKey: process.env.awsSecretkey,
-  region: process.env.awsRegion, // e.g., 'us-east-1'
+  region: process.env.awsRegion,
 });
 
-const s3 = new AWS.S3(); // Create an S3 instance
+const s3 = new AWS.S3();
 
 function uploadOnS3(file, filename) {
     
@@ -14,13 +14,13 @@ function uploadOnS3(file, filename) {
     var parentFolder = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
 
     const params = {
-        Bucket: 'exerciseimage',//change it
+        Bucket: process.env.bucket,
         Key: parentFolder + '/' + filename,
         Body: file,
     };
     
     return new Promise(function (resolve, reject) {
-        s3.upload(params, function (err, data) { // Use s3.upload instead of s3Bucket.upload
+        s3.upload(params, function (err, data) {
             if (err) {
                 console.log('Error =>' + err);
                 reject(null);

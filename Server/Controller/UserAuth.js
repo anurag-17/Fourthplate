@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 const { generateToken, verifyToken } = require("../Utils/jwt");
 const User = require("../Model/User");
 const sendEmail = require("../Utils/SendEmail");
+const CsvParser = require("json2csv").Parser;
 const HttpStatus = {
   OK: 200,
   INVALID: 201,
@@ -48,7 +49,7 @@ exports.uploadImage = async (req, res, next) => {
 };
 exports.addUser = async (req, res) => {
   try {
-    const { name, email, password, age, picture, gender } = req.body;
+    const { name, email, password, contact,age, picture, gender } = req.body;
 
     if (!name || !email || !password) {
       return res
@@ -68,6 +69,7 @@ exports.addUser = async (req, res) => {
     const userData = new User({
       name,
       email,
+      contact,
       password: hashedPassword,
       age,
       picture,
@@ -105,7 +107,7 @@ exports.addUser = async (req, res) => {
   }
 };
 exports.updateUser = async (req, res) => {
-  const id = req.user._id; // Assuming the user's ID is passed as a URL parameter
+  const {id} = req.params; // Assuming the user's ID is passed as a URL parameter
   let updateData = req.body; // The updated information is expected to be in the request body
 
   // Remove the email field from the updateData object if it exists
@@ -281,7 +283,7 @@ exports.resetPassword = async (req, res) => {
 };
 // Delete user controller
 exports.deleteUser = async (req, res) => {
-  const id = req.user._id; // Assuming the user's ID is securely obtained from the authenticated session
+  const {id} = req.params; // Assuming the user's ID is securely obtained from the authenticated session
 
   try {
     // Attempt to delete the user by ID
@@ -466,3 +468,26 @@ exports.getAllUsersWithPagination = async (req, res) => {
       });
   }
 };
+
+exports.userData = async (req, res) => {
+  try {
+    let users = [];
+
+    var invitationData = await User.find({});
+
+    invitationData.forEach((user) => {
+      const { name, email, contact, age, gender, isBlocked} = user;
+      users.push({ name, email, contact, age, gender, isBlocked });
+    });
+    const fields = [ "name", "email", "contact", "age", "gender", "isBlocked" ];
+    const csvParser = new CsvParser({ fields });
+    const data = csvParser.parse(users);
+
+    res.setHeader("Content-Type", "text/csv");
+    res.setHeader("Content-Disposition", "attachment: filename=UserData.csv");
+
+    res.status(200).end(data);
+  } catch (error) {
+    res.status(400).json({ msg: error.message, status: false });
+  }
+}

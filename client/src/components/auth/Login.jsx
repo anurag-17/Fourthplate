@@ -1,18 +1,20 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 
 import RightSection from "./RightSection";
 
 const Login = () => {
   const navigate = useNavigate();
+  const [isLoading, setLoading] = useState(false);
   const [loginDetails, setLoginDetails] = useState({
     email: "",
     password: "",
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setLoading] = useState(false);
+
+  // const state = useSelector((state) => state);
 
   const InputHandler = (e) => {
     setLoginDetails({ ...loginDetails, [e.target.name]: e.target.value });
@@ -20,36 +22,35 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    navigate("/admin-dashboard");
-    return
-    setLoading(true);
     try {
-      const res = await axios.post("/api/adminauth/login", loginDetails, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      // console.log(res);
-      if (res?.data?.success) {
+      const res = await axios.post(
+        "http://34.242.24.155:5000/api/adminauth/login",
+        loginDetails,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log(res);
+      if (res?.data?.success === true) {
         toast.success("Login successfully!");
-        setLoading(false);
-        // localStorage.setItem( "ad_token" , res?.data?.user?.token)
         navigate("/admin-dashboard");
+        localStorage.setItem("token", JSON.stringify(res?.data?.token));
+        setLoading();
       } else {
         toast.error("Login failed please try later!");
-        localStorage.removeItem("ad_token")
-        setLoading(false);
       }
     } catch (error) {
-      console.error("Error during login:", error);
-      toast.error(error?.response?.data?.error || "server error !");
-      localStorage.removeItem("ad_token")
-      setLoading(false);
+      console.log(error);
+      // toast.error("Error during login:", error);
+      toast.error(error?.response?.data?.message);
     }
   };
 
   return (
     <>
+      <ToastContainer autoClose={1000} />
       <div className="flexCenter lg:min-h-screen  ">
         <div className="md:px-[50px] w-full mx-auto">
           <div className="relative flexCenter flex-col 2xl:gap-x-20 xl:gap-x-10 gap-x-7 min-h-screen lg:shadow-none lg:flex-row space-y-8 md:space-y-0 w-[100%] px-[10px]bg-white lg:px-[40px] py-[20px] md:py-[40px] ">

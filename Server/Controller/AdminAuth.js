@@ -1,6 +1,8 @@
 const bcrypt = require("bcrypt");
 const { generateToken, verifyToken } = require("../Utils/jwt");
 const Admin = require("../Model/Admin");
+const User = require("../Model/User");
+const Event = require("../Model/Event")
 const sendEmail = require("../Utils/SendEmail");
 const jwt = require("jsonwebtoken");
 const HttpStatus = {
@@ -29,7 +31,7 @@ const StatusMessage = {
 };
 exports.addAdmin = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, fullname, password } = req.body;
 
     if (!email || !password) {
       return res
@@ -39,7 +41,7 @@ exports.addAdmin = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const adminData = new Admin({ email, password: hashedPassword });
+    const adminData = new Admin({ email, password: hashedPassword, fullname });
 
     const result = await adminData.save();
 
@@ -95,6 +97,7 @@ exports.adminLogin = async (req, res) => {
 
       return res.status(HttpStatus.OK).json({
         message: `Welcome ${admin.email}`,
+        data: admin,
         token: token,
         success: true,
       });
@@ -248,8 +251,7 @@ exports.resetPassword = async (req, res) => {
     } else {
       token = authHeader;
     }
-    const tokenUser =  await verifyToken(token)
- ; // Assuming you have the user's ID from the session or token
+    const tokenUser =  await verifyToken(token); // Assuming you have the user's ID from the session or token
     const { newPassword } = req.body;
 
     if (!newPassword) {
@@ -288,5 +290,41 @@ exports.resetPassword = async (req, res) => {
     return res
       .status(HttpStatus.SERVER_ERROR)
       .json({ success: false, message: StatusMessage.SERVER_ERROR });
+  }
+};
+exports.getAdminById = async (req, res) => {
+  const id  = req.user._id;
+
+  try {
+    const user = await Admin.findById(id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found.",
+      });
+    }
+
+    // Respond with the found user
+    return res.status(200).json({
+      success: true,
+      user: user,
+    });
+  } catch (error) {
+    // Handle any errors, such as invalid ID format
+    return res.status(500).json({
+      success: false,
+      message: "Server error occurred while retrieving the user.",
+      error: error.message,
+    });
+  }
+};
+exports.counts = async (req, res) => {
+  try {
+    const eventCount = await Event.countDocuments();
+    const userCount = await User.countDocuments();
+    res.json({ eventCount, userCount });
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
   }
 };

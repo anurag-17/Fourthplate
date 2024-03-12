@@ -2,22 +2,21 @@ import React, { useState } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
 
-
-const DeleteUser = ({ deleteId, closeModal, refreshdata,token}) => {
-
+const DeleteUser = ({ id, closeModal, refreshData }) => {
   const [isLoading, setLoading] = useState(false);
+  const token = JSON.parse(localStorage.getItem("token"));
 
   const handleDelete = (e) => {
-    
     e.preventDefault();
     setLoading(true);
 
     const options = {
       method: "DELETE",
-      url: `/api/auth/deleteaUser/${deleteId}`,
+      url: `http://34.242.24.155:5000/api/userauth/deletuser/${id}`,
+
       headers: {
-        Authorization: token,
-        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
       },
     };
 
@@ -28,7 +27,7 @@ const DeleteUser = ({ deleteId, closeModal, refreshdata,token}) => {
           setLoading(false);
           toast.success("User deleted successfully!");
           closeModal();
-          refreshdata();
+          refreshData();
         } else {
           setLoading(false);
           toast.error("Failed. something went wrong!");
@@ -45,28 +44,34 @@ const DeleteUser = ({ deleteId, closeModal, refreshdata,token}) => {
   return (
     <>
       <div className="mt-2">
-        <p className=" text-[16px] font-normal leading-[30px] text-gray-500 mt-4">
-          Are you sure you want to delete this user ?
+        <p className="text-[12px] sm:text-[16px] font-normal ms:leading-[30px] text-gray-500 mt-4">
+          Do you really want to delete these records? You can't view this in
+          your list anymore if you delete!
         </p>
       </div>
 
-      <div className="mt-8">
-        <div className="flex md:flex-row flex-col gap-3 justify-between gap-x-5">
+      <div className=" mt-4 lg:mt-8">
+        <div className="flex justify-between gap-x-5">
           <button
-            className="w-full secondary_btn"
-            onClick={()=>closeModal()}
+            className="w-full border border-1 rounded-md border-green-400 text-green-700 hover:bg-green-200 text-sm  px-2 py-3
+                              hover:border-none  border-green-400 text-green-700 hover:bg-green-200 custom_btn_d "
+            onClick={closeModal}
           >
             No, Keep It
           </button>
-        
-            <button
-              className={`w-full  delete_btn
-              ${isLoading ?  "text-[gray]" : "text-[red] hover:bg-[#efb3b38a]" }`}
-              disabled={isLoading}
-              onClick={handleDelete}
-            >
-              { isLoading ? "Loading..." : "Yes, Delete It" }
-            </button>
+
+          <button
+            className={`w-full  rounded-md 
+            custom_btn_d 
+                              border-red-400 text-red-700 bg-red-200  
+                              hover:border-none
+                        ${isLoading ? "bg-gray-200" : "hover:bg-red-200"}
+                        hover:border-none`}
+            onClick={handleDelete}
+            disabled={isLoading}
+          >
+            {isLoading ? "Deleting..." : "Yes, Delete It"}
+          </button>
         </div>
       </div>
     </>
