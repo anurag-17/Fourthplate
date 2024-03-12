@@ -51,7 +51,7 @@ exports.addUser = async (req, res) => {
   try {
     const { name, email, password, contact, age, picture, gender } = req.body;
 
-    if (!name || !email || !password) {
+    if (!email || !password) {
       return res
         .status(HttpStatus.BAD_REQUEST)
         .json({ success: false, message: StatusMessage.MISSING_DATA });
