@@ -42,13 +42,13 @@ const eventSchema = new mongoose.Schema(
     },
     food:{
         type: mongoose.Schema.Types.ObjectId,
-        ref: Food,
+        ref: 'Food',
     },
     ownerId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: User,
+      ref: 'User',
     },
-    joinerId: [{ type: mongoose.Schema.Types.ObjectId, ref: User }],
+    joinerId: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   },
   {
     timestamps: true,

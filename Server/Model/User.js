@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Event = require("./Event");
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -31,7 +32,7 @@ const userSchema = new mongoose.Schema({
   },
   eventJoined:[{
     type: mongoose.Schema.Types.ObjectId,
-    ref: Event
+    ref: 'Event'
   }],
   isBlocked: {
     type: Boolean,

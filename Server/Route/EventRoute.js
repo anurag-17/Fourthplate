@@ -2,8 +2,8 @@ const express = require("express")
 const router = express.Router()
 const { isAuthJWT, authorizeRoles } = require("../Utils/jwt")
 const { addFood, updateFood, deleteFood, getFoodById, getAllFoods } = require("../Controller/FoodAuth")
-const { addEvent, getAllEvents, deleteEvent, getEventById } = require("../Controller/EventAuth")
-const { uploadImage } = require("../Controller/UserAuth")
+const { addEvent, getAllEvents, deleteEvent, getEventById, joinTheEvent, getEventByOwnerID } = require("../Controller/EventAuth")
+
 
 router.route("/addFood").post(isAuthJWT, authorizeRoles("Admin"),addFood)
 router.route("/updateFood/:id").put(isAuthJWT, authorizeRoles("Admin"),updateFood)
@@ -16,5 +16,6 @@ router.route("/addEvent").post(isAuthJWT,addEvent)
 router.route("/getAllEvent").post(isAuthJWT,getAllEvents)
 router.route("/getEventById/:id").get(isAuthJWT,getEventById)
 router.route("/deleteEvent/:id").delete(isAuthJWT, deleteEvent)
-router.route("/uploadImage").post(isAuthJWT, uploadImage)
+router.route("/joinevent").post(isAuthJWT, joinTheEvent)
+router.route("/getEventByOwner").get(isAuthJWT,getEventByOwnerID)
 module.exports = router;
