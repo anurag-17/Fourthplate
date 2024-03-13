@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 const { generateToken, verifyToken } = require("../Utils/jwt");
 const User = require("../Model/User");
 const sendEmail = require("../Utils/SendEmail");
+const Admin = require("../Model/Admin");
 const CsvParser = require("json2csv").Parser;
 const HttpStatus = {
   OK: 200,
@@ -29,9 +30,43 @@ const StatusMessage = {
   SAVED_SUCC: "Saved Successfully!",
   NOT_FOUND: "Data not found.",
 };
-
-exports.uploadImage = async (req, res, next) => {
-  // console.log(req.file);
+exports.verifyUser = async (req, res) => {
+  // console.log(req.params);
+  const user  = req.user;
+  // console.log(token);
+  try {
+   
+ 
+    const LoggedUser = await User.findById(user._id).select("-password -activeToken").populate("eventJoined");
+    if (LoggedUser) {
+      return res.status(HttpStatus.OK).json({
+        success:true,
+        data: LoggedUser,
+        message: "Verification successful",
+      });
+      
+    }
+    const LoggedAdmin = await Admin.findById(user._id).select("-password -activeToken");
+      if (LoggedAdmin) {
+      return res.status(HttpStatus.OK).json({
+        success:true,
+        data: LoggedAdmin,
+        message: "Verification successful",
+      })}
+    
+    // If verification succeeds, proceed with other actions or return success
+    // For example:
+    // return res.status(HttpStatus.OK).json({ message: 'Verification successful' });
+  } catch (error) {
+    console.log(error);
+    return res.status(HttpStatus.SERVER_ERROR).json({
+      success:false,
+      error: StatusMessage.SERVER_ERROR,
+    });
+  }
+};
+exports.uploadImage = async (req, res) => {
+  console.log(req.file);
   try {
     if (!req.file) {
       return res.status(400).json({ error: "Invalid request" });
