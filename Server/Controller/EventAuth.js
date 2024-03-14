@@ -204,13 +204,14 @@ exports.getEventById = async (req, res) => {
 exports.getAllEvents = async (req, res) => {
   let { page = 1, limit = 10 } = req.query;
   const {
-    eventName,
-    location,
+    search,
+    // eventName,
+    // location,
     food,
     allowMember,
-    coordinates,
-    state,
-    city,
+    // coordinates,
+    // state,
+    // city,
     latitude,
     longitude,
     distance = 30,
@@ -221,16 +222,30 @@ exports.getAllEvents = async (req, res) => {
   let query = {};
 
   // Basic text search for eventName and location
-  if (eventName) query.eventName = new RegExp(eventName, "i"); // Case-insensitive regex search
-  if (location) query.location = new RegExp(location, "i");
-  if (state) query.state = state;
-  if (city) query.city = city;
+    // Dynamic search handling
+    if (search) {
+      const searchRegex = new RegExp(search, 'i'); // Case-insensitive regex
+      query.$or = [
+        { eventName: searchRegex },
+        { location: searchRegex },
+        { state: searchRegex },
+        { city: searchRegex }
+      ];
+    }
+  // if (eventName) query.eventName = new RegExp(eventName, "i"); // Case-insensitive regex search
+  // if (location) query.location = new RegExp(location, "i");
+  // if (state) query.state = state;
+  // if (city) query.city = city;
 
   // if (food) query.food = mongoose.Types.ObjectId(food);
-  if (food) {
-    const foodIds = food.split(",");
-    query.food = { $in: foodIds };
-  }
+ // Filter by food IDs
+ if (food) {
+  query.food = new mongoose.Types.ObjectId(food); // Convert string ID to ObjectId
+}
+//  if(food){
+//   const foodIds = food.split(",").map(id => mongoose.Types.ObjectId(id)); // Convert string IDs to ObjectId
+//   query.food = { $in: foodIds };
+// }
 
   // Filter by maximum number of people allowed
   if (allowMember) query.allowMember = { $lte: parseInt(allowMember, 10) };
