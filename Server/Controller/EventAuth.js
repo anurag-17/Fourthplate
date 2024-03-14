@@ -412,7 +412,7 @@ exports.getEventByOwnerID = async(req, res) => {
       // Assuming req.user._id is set and valid thanks to previous middleware (like authentication)
       const id = req.user._id;
       // Find all events where the ownerId matches the current user's ID
-      const events = await Event.find({ ownerId: id });
+      const events = await Event.find({ ownerId: id }).populate("food");
 
       // Check if events exist for the user
       if (!events || events.length === 0) {
