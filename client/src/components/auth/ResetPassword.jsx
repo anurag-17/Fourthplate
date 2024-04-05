@@ -21,7 +21,7 @@ const ResetPassword = () => {
             const response = await axios.post('/api/adminauth/resetPassword', {password:password}, {
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization:{resetToken},
+                    Authorization:resetToken,
                 },
             });
 

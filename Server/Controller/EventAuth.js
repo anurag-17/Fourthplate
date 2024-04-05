@@ -202,7 +202,7 @@ exports.getEventById = async (req, res) => {
 
 // Get all events with pagination, search, and filters
 exports.getAllEvents = async (req, res) => {
-  let { page = 1, limit = 10 } = req.query;
+  let { page = 1, limit = 100 } = req.query;
   const {
     search,
     // eventName,
