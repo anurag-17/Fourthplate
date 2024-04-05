@@ -263,8 +263,8 @@ exports.forgotPwd = async (req, res) => {
     from: "akash.hardia@gmail.com",
     to: user.email,
     subject: "Reset Password Link",
-    text: `<h2>Hello! ${user.name} </h2>
-        <h3>Please follow the link to reset your password: <a href=http//:localhost:3000/${token}>Link</a></h3>
+    text: `<h2>Hello User, </h2>
+        <h3>Please follow the link to reset your password: <a href=http://localhost:3000/reset-password/${token}>Link</a></h3>
         <h3>Thanks and regards</h3>
         `,
   };
@@ -291,9 +291,9 @@ exports.resetPassword = async (req, res) => {
       token = authHeader;
     }
     const tokenUser = await verifyToken(token); // Assuming you have the user's ID from the session or token
-    const { newPassword } = req.body;
+    const { password } = req.body;
 
-    if (!newPassword) {
+    if (!password) {
       return res
         .status(HttpStatus.BAD_REQUEST)
         .json({ success: false, message: StatusMessage.MISSING_DATA });
@@ -314,7 +314,7 @@ exports.resetPassword = async (req, res) => {
     // Verify the current password
 
     // Hash the new password and update
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
     user.password = hashedPassword;
     user.resetToken = "";
     await user.save();

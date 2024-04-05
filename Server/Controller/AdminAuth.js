@@ -1,5 +1,5 @@
 const bcrypt = require("bcrypt");
-const { generateToken, verifyToken } = require("../Utils/jwt");
+const { generateToken, verifyToken, generateTokenForPwd } = require("../Utils/jwt");
 const Admin = require("../Model/Admin");
 const User = require("../Model/User");
 const Event = require("../Model/Event")
@@ -217,15 +217,15 @@ exports.forgotPwd = async (req, res) => {
       .json({ success: false, message: StatusMessage.USER_NOT_FOUND });
   }
   // console.log(user);
-  const token = generateToken({ email: user.email });
+  const token = generateTokenForPwd({ email: user.email });
   user.resetToken = token;
   await user.save();
   const mailOptions = {
     from: "akash.hardia@gmail.com",
     to: user.email,
     subject: "Reset Password Link",
-    text: `<h2>Hello! ${user.name} </h2>
-      <h3>Please follow the link to reset your password: <a href=http//:localhost:3000/${token}>Link</a></h3>
+    text: `<h2>Hello Admin, </h2>
+      <h3>Please follow the link to reset your password: <a href=http://localhost:3000/reset-password/${token}>Link</a></h3>
       <h3>Thanks and regards</h3>
       `,
   };
@@ -251,13 +251,20 @@ exports.resetPassword = async (req, res) => {
     } else {
       token = authHeader;
     }
-    const tokenUser =  await verifyToken(token); // Assuming you have the user's ID from the session or token
-    const { newPassword } = req.body;
+    console.log(token);
+    const tokenUser =  await verifyToken(token);0// Assuming you have the user's ID from the session or token
+    console.log(tokenUser);
+    const { password } = req.body;
 
-    if (!newPassword) {
+    if (!password) {
       return res
         .status(HttpStatus.BAD_REQUEST)
         .json({ success: false, message: StatusMessage.MISSING_DATA });
+    }
+    if (!tokenUser) {
+      return res
+      .status(HttpStatus.NOT_FOUND)
+      .json({ success: false, message: StatusMessage.USER_NOT_FOUND });
     }
     // console.log(userId);
     const user = await Admin.findOne({email:tokenUser.email});
@@ -275,7 +282,7 @@ exports.resetPassword = async (req, res) => {
     // Verify the current password
 
     // Hash the new password and update
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
     user.password = hashedPassword;
     user.resetToken = "";
     await user.save();
