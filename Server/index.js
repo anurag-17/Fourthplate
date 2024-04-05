@@ -23,6 +23,11 @@ app.use(cors());
 
 const connectDB = require("./Utils/db");
 console.log(process.env.NODE_ENV === "dev");
+app.use('/api/adminauth', require('./Route/AdminRoute'));
+app.use('/api/userauth', require('./Route/UserRoute'))
+app.use('/api/eventauth', require('./Route/EventRoute'))
+
+
 if (process.env.NODE_ENV === "dev") {
   //replaced "production" with "dev"
   console.log("dasda");
@@ -139,9 +144,7 @@ if (process.env.NODE_ENV === "dev") {
 //     res.status(400).json({ message: "Not Authorized" });
 //   }
 // });
-app.use('/api/adminauth', require('./Route/AdminRoute'));
-app.use('/api/userauth', require('./Route/UserRoute'))
-app.use('/api/eventauth', require('./Route/EventRoute'))
+
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
