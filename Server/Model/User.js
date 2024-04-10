@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Event = require("./Event");
+const { type } = require("os");
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -44,6 +45,9 @@ const userSchema = new mongoose.Schema({
   resetToken: {
     type: String,
   },
+  providerId:{
+    type:String
+  }
 });
 const User = mongoose.model("User", userSchema);
 module.exports = User;

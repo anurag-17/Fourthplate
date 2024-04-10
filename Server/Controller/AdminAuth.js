@@ -1,8 +1,12 @@
 const bcrypt = require("bcrypt");
-const { generateToken, verifyToken, generateTokenForPwd } = require("../Utils/jwt");
+const {
+  generateToken,
+  verifyToken,
+  generateTokenForPwd,
+} = require("../Utils/jwt");
 const Admin = require("../Model/Admin");
 const User = require("../Model/User");
-const Event = require("../Model/Event")
+const Event = require("../Model/Event");
 const sendEmail = require("../Utils/SendEmail");
 const jwt = require("jsonwebtoken");
 const HttpStatus = {
@@ -11,7 +15,7 @@ const HttpStatus = {
   BAD_REQUEST: 400,
   UNAUTHORIZED: 401,
   SERVER_ERROR: 500,
-  NOT_FOUND : 404
+  NOT_FOUND: 404,
 };
 const StatusMessage = {
   INVALID_CREDENTIALS: "Invalid credentials.",
@@ -225,7 +229,7 @@ exports.forgotPwd = async (req, res) => {
     to: user.email,
     subject: "Reset Password Link",
     text: `<h2>Hello Admin, </h2>
-      <h3>Please follow the link to reset your password: <a href=http://localhost:3000/reset-password/${token}>Link</a></h3>
+      <h3>Please follow the link to reset your password: <a href=http://34.242.24.155:5000/reset-password/${token}>Link</a></h3>
       <h3>Thanks and regards</h3>
       `,
   };
@@ -246,61 +250,52 @@ exports.forgotPwd = async (req, res) => {
 exports.resetPassword = async (req, res) => {
   try {
     const authHeader = req.headers.authorization;
-    if (authHeader && authHeader.startsWith("Bearer ")) {
-      token = authHeader.slice(7);
-    } else {
-      token = authHeader;
+    let token;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({ success: false, message: "Invalid or missing authorization token" });
     }
-    console.log(token);
-    const tokenUser =  await verifyToken(token);0// Assuming you have the user's ID from the session or token
-    console.log(tokenUser);
-    const { password } = req.body;
 
-    if (!password) {
-      return res
-        .status(HttpStatus.BAD_REQUEST)
-        .json({ success: false, message: StatusMessage.MISSING_DATA });
-    }
+    token = authHeader.slice(7); // Extract token without 'Bearer ' prefix
+
+    // Verify token and extract user information
+    const tokenUser = await verifyToken(token);
     if (!tokenUser) {
-      return res
-      .status(HttpStatus.NOT_FOUND)
-      .json({ success: false, message: StatusMessage.USER_NOT_FOUND });
+      return res.status(401).json({ success: false, message: "Unauthorized" });
     }
-    // console.log(userId);
-    const user = await Admin.findOne({email:tokenUser.email});
+
+    const { password } = req.body;
+    if (!password) {
+      return res.status(400).json({ success: false, message: "Missing password" });
+    }
+
+    // First try to find the user in the Admin collection
+    let user = await Admin.findOne({ email: tokenUser.email, resetToken: token });
     if (!user) {
-      return res
-        .status(HttpStatus.NOT_FOUND)
-        .json({ success: false, message: StatusMessage.USER_NOT_FOUND });
+      // If not found in Admin, then try to find in the User collection
+      user = await User.findOne({ email: tokenUser.email, resetToken: token });
+      if (!user) {
+        return res.status(404).json({ success: false, message: "User not found" });
+      }
     }
-    
+
     if (user.resetToken !== token) {
-      return res
-        .status(HttpStatus.NOT_FOUND)
-        .json({ success: false, message: StatusMessage.USER_NOT_FOUND });
+      return res.status(401).json({ success: false, message: "Invalid token" });
     }
-    // Verify the current password
 
     // Hash the new password and update
     const hashedPassword = await bcrypt.hash(password, 10);
     user.password = hashedPassword;
-    user.resetToken = "";
+    user.resetToken = ""; // Clear the reset token
     await user.save();
 
-    // Optionally, send an email to the user acknowledging the password change
-
-    return res
-      .status(HttpStatus.OK)
-      .json({ success: true, message: "Password updated successfully" });
+    return res.status(200).json({ success: true, message: "Password updated successfully" });
   } catch (error) {
-    console.error(error);
-    return res
-      .status(HttpStatus.SERVER_ERROR)
-      .json({ success: false, message: StatusMessage.SERVER_ERROR });
+    console.error(error); // Keep detailed errors server-side for security
+    return res.status(500).json({ success: false, message: "An error occurred" });
   }
 };
 exports.getAdminById = async (req, res) => {
-  const id  = req.user._id;
+  const id = req.user._id;
 
   try {
     const user = await Admin.findById(id);
