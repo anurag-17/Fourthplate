@@ -22,7 +22,7 @@ const ResetPassword = () => {
         {
           headers: {
             "Content-Type": "application/json",
-            authorization: resetToken,
+            authorization : `Bearer ${resetToken}`,
           },
         }
       );
