@@ -32,35 +32,37 @@ const StatusMessage = {
 };
 exports.verifyUser = async (req, res) => {
   // console.log(req.params);
-  const user  = req.user;
+  const user = req.user;
   // console.log(token);
   try {
-   
- 
-    const LoggedUser = await User.findById(user._id).select("-password -activeToken").populate("eventJoined");
+    const LoggedUser = await User.findById(user._id)
+      .select("-password -activeToken")
+      .populate("eventJoined");
     if (LoggedUser) {
       return res.status(HttpStatus.OK).json({
-        success:true,
+        success: true,
         data: LoggedUser,
         message: "Verification successful",
       });
-      
     }
-    const LoggedAdmin = await Admin.findById(user._id).select("-password -activeToken");
-      if (LoggedAdmin) {
+    const LoggedAdmin = await Admin.findById(user._id).select(
+      "-password -activeToken"
+    );
+    if (LoggedAdmin) {
       return res.status(HttpStatus.OK).json({
-        success:true,
+        success: true,
         data: LoggedAdmin,
         message: "Verification successful",
-      })}
-    
+      });
+    }
+
     // If verification succeeds, proceed with other actions or return success
     // For example:
     // return res.status(HttpStatus.OK).json({ message: 'Verification successful' });
   } catch (error) {
     console.log(error);
     return res.status(HttpStatus.SERVER_ERROR).json({
-      success:false,
+      success: false,
       error: StatusMessage.SERVER_ERROR,
     });
   }
@@ -84,15 +86,16 @@ exports.uploadImage = async (req, res) => {
 };
 exports.addUser = async (req, res) => {
   try {
-    const { name, email, password, contact, age, picture, gender } = req.body;
+    const { name, email, password, contact, age, picture, gender, providerId } =
+      req.body || "";
 
-    if (!email || !password) {
+    if (!email || (!password && !providerId)) {
       return res
         .status(HttpStatus.BAD_REQUEST)
         .json({ success: false, message: StatusMessage.MISSING_DATA });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = password ? await bcrypt.hash(password, 10) : null;
     const isDuplicate = await User.find({ email });
     //   console.log(isDuplicate);
     if (isDuplicate.length > 0) {
@@ -109,6 +112,7 @@ exports.addUser = async (req, res) => {
       age,
       picture,
       gender,
+      providerId,
     });
 
     const result = await userData.save();
@@ -152,11 +156,17 @@ exports.updateUser = async (req, res) => {
     delete updateData.password;
   }
 
-
   // Handle contact field update logic
-  if ('contact' in updateData && updateData.contact !== "" && updateData.contact !== null) {
+  if (
+    "contact" in updateData &&
+    updateData.contact !== "" &&
+    updateData.contact !== null
+  ) {
     // Check for duplicacy of contact value before updating
-    const doesExist = await User.findOne({ contact: updateData.contact, _id: { $ne: id } });
+    const doesExist = await User.findOne({
+      contact: updateData.contact,
+      _id: { $ne: id },
+    });
     if (doesExist) {
       return res.status(400).json({
         success: false,
@@ -168,10 +178,14 @@ exports.updateUser = async (req, res) => {
   // Define a function to update the user to avoid repetition
   const updateUserInDatabase = async () => {
     try {
-      const updatedUser = await User.findByIdAndUpdate(id, updateData, { new: true });
+      const updatedUser = await User.findByIdAndUpdate(id, updateData, {
+        new: true,
+      });
 
       if (!updatedUser) {
-        return res.status(404).json({ success: false, message: "User not found." });
+        return res
+          .status(404)
+          .json({ success: false, message: "User not found." });
       }
 
       // Return the updated user information
@@ -264,7 +278,7 @@ exports.forgotPwd = async (req, res) => {
     to: user.email,
     subject: "Reset Password Link",
     text: `<h2>Hello User, </h2>
-        <h3>Please follow the link to reset your password: <a href=http://localhost:3000/reset-password/${token}>Link</a></h3>
+        <h3>Please follow the link to reset your password: <a href=http://34.242.24.155:5000/reset-password/${token}>Link</a></h3>
         <h3>Thanks and regards</h3>
         `,
   };
@@ -393,11 +407,19 @@ exports.getUserById = async (req, res) => {
 };
 
 exports.loginUser = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, providerId } = req.body || "";
+  if (!email || (!password && !providerId)) {
+    return res
+      .status(HttpStatus.BAD_REQUEST)
+      .json({ success: false, message: StatusMessage.MISSING_DATA });
+  }
 
   try {
     // Check for user existence
-    const user = await User.findOne({ email });
+    const user = await User.findOne({
+      email,
+      ...(providerId && { providerId }),
+    });
     if (!user) {
       return res
         .status(400)
@@ -405,12 +427,19 @@ exports.loginUser = async (req, res) => {
     }
 
     // Compare password
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Invalid credentials" });
+    if (password) {
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        return res
+          .status(400)
+          .json({ success: false, message: "Invalid credentials" });
+      }
     }
+    // if (providerId && providerId !== user.providerId) {
+    //   return res
+    //   .status(400)
+    //   .json({ success: false, message: "Invalid credentials" })
+    // }
 
     // Generate JWT token
     const token = generateToken({ email: user.email });
