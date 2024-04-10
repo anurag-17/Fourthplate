@@ -17,6 +17,7 @@ const ForgotPassword = () => {
             const res = await axios.post('/api/adminauth/forgotPassword', {email:email}, {
                 headers: {
                     'Content-Type': 'application/json',
+                    
                 },
             });
 
