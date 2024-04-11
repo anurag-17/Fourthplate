@@ -86,10 +86,10 @@ exports.uploadImage = async (req, res) => {
 };
 exports.addUser = async (req, res) => {
   try {
-    const { name, email, password, contact, age, picture, gender, providerId } =
+    const { name, email, password, contact, age, picture, gender, providerId,appleId } =
       req.body || "";
 
-    if (!email || (!password && !providerId)) {
+    if (!appleId ||(!email || (!password && !providerId))) {
       return res
         .status(HttpStatus.BAD_REQUEST)
         .json({ success: false, message: StatusMessage.MISSING_DATA });
@@ -113,6 +113,7 @@ exports.addUser = async (req, res) => {
       picture,
       gender,
       providerId,
+      appleId
     });
 
     const result = await userData.save();
@@ -408,7 +409,7 @@ exports.getUserById = async (req, res) => {
 
 exports.loginUser = async (req, res) => {
   const { email, password, providerId } = req.body || "";
-  if (!email || (!password && !providerId)) {
+  if (!appleId ||(!email || (!password && !providerId))) {
     return res
       .status(HttpStatus.BAD_REQUEST)
       .json({ success: false, message: StatusMessage.MISSING_DATA });
@@ -420,6 +421,9 @@ exports.loginUser = async (req, res) => {
       email,
       ...(providerId && { providerId }),
     });
+    if (appleId) {
+      user = await User.findOne({appleId})
+    }
     if (!user) {
       return res
         .status(400)
@@ -452,11 +456,11 @@ exports.loginUser = async (req, res) => {
     return res.status(200).json({
       success: true,
       token,
-      message: `Welcome ${user.name}`,
+      message: `Welcome ${user.name || ""}`,
       user: {
-        name: user.name,
-        email: user.email,
-        userId: user._id,
+        name: user?.name || "",
+        email: user?.email || "",
+        userId: user?._id || "",
       },
     });
   } catch (error) {
