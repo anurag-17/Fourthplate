@@ -96,12 +96,24 @@ exports.addUser = async (req, res) => {
     }
 
     const hashedPassword = password ? await bcrypt.hash(password, 10) : null;
-    const isDuplicate = await User.find({ email });
-    //   console.log(isDuplicate);
-    if (isDuplicate.length > 0) {
-      return res
-        .status(HttpStatus.BAD_REQUEST)
-        .json({ success: false, message: StatusMessage.DUPLICATE_EMAIL });
+    if (email) {
+      
+      const isDuplicate = await User.find({ email });
+      //   console.log(isDuplicate);
+      if (isDuplicate.length > 0) {
+        return res
+          .status(HttpStatus.BAD_REQUEST)
+          .json({ success: false, message: StatusMessage.DUPLICATE_EMAIL });
+      }
+    }
+    if (appleId) {
+      const isDuplicate = await User.find({ appleId });
+      //   console.log(isDuplicate);
+      if (isDuplicate.length > 0) {
+        return res
+          .status(HttpStatus.BAD_REQUEST)
+          .json({ success: false, message: "Apple Id already exist." });
+      }
     }
 
     const userData = new User({
@@ -408,7 +420,7 @@ exports.getUserById = async (req, res) => {
 };
 
 exports.loginUser = async (req, res) => {
-  const { email, password, providerId } = req.body || "";
+  const { email, password, providerId,appleId } = req.body || "";
   if (!appleId && (!email || (!password && !providerId))) {
     return res
       .status(HttpStatus.BAD_REQUEST)
