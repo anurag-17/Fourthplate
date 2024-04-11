@@ -89,7 +89,7 @@ exports.addUser = async (req, res) => {
     const { name, email, password, contact, age, picture, gender, providerId,appleId } =
       req.body || "";
 
-    if (!appleId ||(!email || (!password && !providerId))) {
+    if (!appleId && (!email || (!password && !providerId))) {
       return res
         .status(HttpStatus.BAD_REQUEST)
         .json({ success: false, message: StatusMessage.MISSING_DATA });
@@ -409,7 +409,7 @@ exports.getUserById = async (req, res) => {
 
 exports.loginUser = async (req, res) => {
   const { email, password, providerId } = req.body || "";
-  if (!appleId ||(!email || (!password && !providerId))) {
+  if (!appleId && (!email || (!password && !providerId))) {
     return res
       .status(HttpStatus.BAD_REQUEST)
       .json({ success: false, message: StatusMessage.MISSING_DATA });
