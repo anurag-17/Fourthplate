@@ -47,6 +47,10 @@ const userSchema = new mongoose.Schema({
   },
   providerId:{
     type:String
+  },
+  appleId:{
+    type:String,
+    default:null
   }
 });
 const User = mongoose.model("User", userSchema);
