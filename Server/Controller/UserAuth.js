@@ -420,59 +420,54 @@ exports.getUserById = async (req, res) => {
 };
 
 exports.loginUser = async (req, res) => {
-  const { email, password, providerId,appleId } = req.body || "";
-  if (!appleId && (!email || (!password && !providerId))) {
-    return res
-      .status(HttpStatus.BAD_REQUEST)
-      .json({ success: false, message: StatusMessage.MISSING_DATA });
+  const { email, password, providerId, appleId } = req.body || {};
+  
+  // Ensuring at least one authentication method is provided
+  if (!(email && (password || providerId)) && !appleId) {
+    return res.status(400).json({ 
+      success: false, 
+      message: "Missing authentication data. Provide either email with password or provider ID, or an Apple ID." 
+    });
   }
 
   try {
-    // Check for user existence
-    const user = await User.findOne({
-      email,
-      ...(providerId && { providerId }),
-    });
+    let user = null;
+    // Prioritize Apple ID for authentication if provided
     if (appleId) {
-      user = await User.findOne({appleId})
+      user = await User.findOne({ appleId });
+    } else {
+      // Handle authentication via email and providerId
+      user = await User.findOne({ 
+        email, 
+        ...(providerId && { providerId }) 
+      });
     }
+    
     if (!user) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Invalid credentials" });
+      return res.status(400).json({ success: false, message: "Invalid credentials" });
     }
 
-    // Compare password
+    // Password authentication
     if (password) {
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
-        return res
-          .status(400)
-          .json({ success: false, message: "Invalid credentials" });
+        return res.status(400).json({ success: false, message: "Invalid credentials" });
       }
     }
-    // if (providerId && providerId !== user.providerId) {
-    //   return res
-    //   .status(400)
-    //   .json({ success: false, message: "Invalid credentials" })
-    // }
 
     // Generate JWT token
     const token = generateToken({ email: user.email });
-    await User.findByIdAndUpdate(
-      { _id: user._id?.toString() },
-      { activeToken: token },
-      { new: true }
-    );
-    // Respond with token
+    await User.findByIdAndUpdate(user._id, { activeToken: token }, { new: true });
+
+    // Respond with the token and user details
     return res.status(200).json({
       success: true,
       token,
-      message: `Welcome ${user.name || ""}`,
+      message: `Welcome ${user?.name || ""}`,
       user: {
         name: user?.name || "",
         email: user?.email || "",
-        userId: user?._id || "",
+        userId: user?._id.toString(),
       },
     });
   } catch (error) {
@@ -483,6 +478,7 @@ exports.loginUser = async (req, res) => {
     });
   }
 };
+
 exports.logoutUser = async (req, res) => {
   try {
     const authHeader = req.headers.authorization;
