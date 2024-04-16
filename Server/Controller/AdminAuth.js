@@ -33,6 +33,7 @@ const StatusMessage = {
   SAVED_SUCC: "Saved Successfully!",
   NOT_FOUND: "Data not found.",
 };
+
 exports.addAdmin = async (req, res) => {
   try {
     const { email, fullname, password } = req.body;
@@ -330,3 +331,5 @@ exports.counts = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+
