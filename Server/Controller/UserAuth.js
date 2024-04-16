@@ -127,12 +127,33 @@ exports.addUser = async (req, res) => {
       providerId,
       appleId
     });
-
     const result = await userData.save();
-
     //   console.log(result); // Log the result for debugging, avoid exposing in production
+    const mailOptions = {
+      from: "app@fourthplate.com",
+      to: email,
+      subject: "Congratulations! You've Successfully Signed Up",
+      text: `<h2>Hello Dear, </h2>
+          <h3>Congratulations! You have successfully signed up for our service. Welcome!
+          If you have any questions or need assistance, feel free to reply to this email or contact our support team.</h3>
+          <h3>Thanks and regards</h3>
+          `,
+    };
+  
+    try {
+      const info = await sendEmail(mailOptions);
+      console.log("Email sent:", info);
+      return res.status(HttpStatus.OK).json({ success: true, message: result });
+    } catch (error) {
+      console.log("Error sending email:", error);
+      return res
+        .status(500)
+        .json({ success: false, message: "Failed to send email" });
+    }
 
-    return res.status(HttpStatus.OK).json({ success: true, message: result });
+
+
+    
   } catch (error) {
     console.error(error); // Log the error for debugging, avoid exposing in production
     if (
@@ -582,4 +603,56 @@ exports.userData = async (req, res) => {
   } catch (error) {
     res.status(400).json({ msg: error.message, status: false });
   }
+};
+
+
+exports.Create_UserBy_Admin = async (req, res, next) => {
+
+  const {email,password } = req.body;
+
+  const existingUser = await User.findOne({ email });
+  if (existingUser) {
+    return res.status(203).json({ success: false,message: "User with this email already exists." });
+  }
+
+  const hashedPassword = password ? await bcrypt.hash(password, 10) : null;
+  const userData = {
+    email,
+    password:hashedPassword
+  };
+  try {
+    const newUser = await User.create(userData);
+    // sendToken(newUser, 201, res);
+    const mailOptions = {
+      from: "app@fourthplate.com",
+      to: email,
+      subject: "Congratulations! Your Account is Successfully Created",
+      text: `<h2>Hello Dear, </h2>
+          <h3>Congratulations! Your Account successfully is Created for our service. Welcome!
+          Your account email :- ${email},
+          Your account password :- ${password},
+          </h3>
+          <h3>Thanks and regards</h3>
+          `,
+    };
+  
+    try {
+      const info = await sendEmail(mailOptions);
+      console.log("Email sent:", info);
+      return res.status(HttpStatus.OK).json({ success: true,message:"user created successfully", data:newUser });
+    } catch (error) {
+      console.log("Error sending email:", error);
+      return res
+        .status(500)
+        .json({ success: false, message: "Failed to send email" });
+    }
+
+
+  } catch (error) {
+    next(error);
+    res.status(500).json({ status:false,error: 'Internal server error' });
+
+  }
+
+
 };

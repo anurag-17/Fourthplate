@@ -448,9 +448,14 @@ exports.joinTheEvent = async (req, res) => {
 exports.getEventByOwnerID = async(req, res) => {
     try {
       // Assuming req.user._id is set and valid thanks to previous middleware (like authentication)
-      const id = req.user._id;
+      const id = req.body.id;
       // Find all events where the ownerId matches the current user's ID
-      const events = await Event.find({ ownerId: id }).populate("food");
+      const events = await Event.find({ ownerId: id }).populate("food").populate("ownerId").populate({
+        path: "joinerId", // Populate the joinerId field
+        // No need to populate further nested fields
+      });
+    // const events = await Event.find(_id).populate("food").populate("ownerId");
+
 
       // Check if events exist for the user
       if (!events || events.length === 0) {
