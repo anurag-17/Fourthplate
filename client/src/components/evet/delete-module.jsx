@@ -27,7 +27,7 @@ const DeleteModule = ({ id, closeModal, refreshData }) => {
       );
 
       if (response.status === 200) {
-        toast.success("Category Deleted successfully!");
+        toast.success("Event Deleted successfully!");
         closeModal();
         refreshData();
       } else {
