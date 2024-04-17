@@ -606,10 +606,11 @@ exports.logoutUser = async (req, res) => {
     }
   }
 };
+
 exports.getAllUsersWithPagination = async (req, res) => {
   // Extract page and limit from query parameters, provide default values
   const page = parseInt(req.query.page, 10) || 1;
-  const limit = parseInt(req.query.limit, 10) || 10;
+  const limit = parseInt(req.query.limit, 10) || 50;
   const skip = (page - 1) * limit;
 
   try {
@@ -619,8 +620,8 @@ exports.getAllUsersWithPagination = async (req, res) => {
     // Calculate total pages
     const totalPages = Math.ceil(totalUsers / limit);
 
-    // Find users with limit and skip for pagination
-    const users = await User.find().skip(skip).limit(limit);
+    // Find users with limit, skip, and sort for pagination
+    const users = await User.find().skip(skip).limit(limit).sort({ _id: -1 });
 
     // Respond with users and pagination details
     return res.status(200).json({
@@ -639,6 +640,7 @@ exports.getAllUsersWithPagination = async (req, res) => {
     });
   }
 };
+
 
 exports.userData = async (req, res) => {
   try {
