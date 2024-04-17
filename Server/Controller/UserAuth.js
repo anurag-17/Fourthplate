@@ -30,43 +30,100 @@ const StatusMessage = {
   SAVED_SUCC: "Saved Successfully!",
   NOT_FOUND: "Data not found.",
 };
-exports.verifyUser = async (req, res) => {
-  // console.log(req.params);
-  const user = req.user;
-  // console.log(token);
-  try {
-    const LoggedUser = await User.findById(user._id)
-      .select("-password -activeToken")
-      .populate("eventJoined");
-    if (LoggedUser) {
-      return res.status(HttpStatus.OK).json({
-        success: true,
-        data: LoggedUser,
-        message: "Verification successful",
-      });
-    }
-    const LoggedAdmin = await Admin.findById(user._id).select(
-      "-password -activeToken"
-    );
-    if (LoggedAdmin) {
-      return res.status(HttpStatus.OK).json({
-        success: true,
-        data: LoggedAdmin,
-        message: "Verification successful",
-      });
-    }
 
-    // If verification succeeds, proceed with other actions or return success
-    // For example:
-    // return res.status(HttpStatus.OK).json({ message: 'Verification successful' });
+
+
+
+
+
+// exports.verifyUser = async (req, res) => {
+//   // console.log(req.params);
+//   const user = req.user;
+//   // console.log(token);
+//   try {
+//     const LoggedUser = await User.findById(user._id)
+//       .select("-password -activeToken")
+//       .populate("eventJoined");
+//     if (LoggedUser) {
+//       return res.status(HttpStatus.OK).json({
+//         success: true,
+//         data: LoggedUser,
+//         message: "Verification successful",
+//       });
+//     }
+//     const LoggedAdmin = await Admin.findById(user._id).select(
+//       "-password -activeToken"
+//     );
+//     if (LoggedAdmin) {
+//       return res.status(HttpStatus.OK).json({
+//         success: true,
+//         data: LoggedAdmin,
+//         message: "Verification successful",
+//       });
+//     }
+
+//     // If verification succeeds, proceed with other actions or return success
+//     // For example:
+//     // return res.status(HttpStatus.OK).json({ message: 'Verification successful' });
+//   } catch (error) {
+//     console.log(error);
+//     return res.status(HttpStatus.SERVER_ERROR).json({
+//       success: false,
+//       error: StatusMessage.SERVER_ERROR,
+//     });
+//   }
+// };
+
+
+exports.verifyUser = async (req, res) => {
+  const user = req.user;
+  try {
+      let loggedInUser;
+      
+      // Check if the user is a regular user
+      loggedInUser = await User.findById(user._id)
+          .select("-password -activeToken")
+          .populate({
+              path: "eventJoined",
+              populate: [
+                  { path: "food", select: "-__v" },
+                  { path: "ownerId", select: "-password -activeToken -__v" },
+                { path: "joinerId",select: "-__v" }
+              ]
+          });
+
+      // If the user is not found among regular users, check if they are an admin
+      if (!loggedInUser) {
+          loggedInUser = await Admin.findById(user._id).select("-password -activeToken");
+      }
+
+      // If the user or admin is found, send the response
+      if (loggedInUser) {
+          return res.status(HttpStatus.OK).json({
+              success: true,
+              data: loggedInUser,
+              message: "Verification successful",
+          });
+      } else {
+          // If neither regular user nor admin is found, return appropriate message
+          return res.status(HttpStatus.NOT_FOUND).json({
+              success: false,
+              message: "User not found",
+          });
+      }
   } catch (error) {
-    console.log(error);
-    return res.status(HttpStatus.SERVER_ERROR).json({
-      success: false,
-      error: StatusMessage.SERVER_ERROR,
-    });
+      console.log(error);
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+          success: false,
+          error: StatusMessage.SERVER_ERROR,
+      });
   }
 };
+
+
+
+
+
 exports.uploadImage = async (req, res) => {
   console.log(req.file);
   try {
@@ -84,6 +141,7 @@ exports.uploadImage = async (req, res) => {
     return res.status(500).json({ error: "Internal server error" });
   }
 };
+
 exports.addUser = async (req, res) => {
   try {
     const { name, email, password, contact, age, picture, gender, providerId,appleId } =
