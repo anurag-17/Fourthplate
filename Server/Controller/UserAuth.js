@@ -656,3 +656,93 @@ exports.Create_UserBy_Admin = async (req, res, next) => {
 
 
 };
+
+
+exports.updateUserByAdmin = async (req, res) => {
+  const { id } = req.params;
+  let updateData = { ...req.body };
+
+  // Remove the email and password fields from the updateData object if they exist
+  if (updateData.email || updateData.password) {
+    console.log("Email or password update request detected and ignored.");
+    delete updateData.email;
+    delete updateData.password;
+  }
+
+  // Handle contact field update logic
+  if (
+    "contact" in updateData &&
+    updateData.contact !== "" &&
+    updateData.contact !== null
+  ) {
+    // Check for duplicacy of contact value before updating
+    const doesExist = await User.findOne({
+      contact: updateData.contact,
+      _id: { $ne: id },
+    });
+    if (doesExist) {
+      return res.status(400).json({
+        success: false,
+        message: "Contact already exists. Please use a different contact.",
+      });
+    }
+  }
+
+  // Define a function to update the user to avoid repetition
+  const updateUserInDatabase = async () => {
+    try {
+      const updatedUser = await User.findByIdAndUpdate(id, updateData, {
+        new: true,
+      });
+
+      if (!updatedUser) {
+        return res
+          .status(404)
+          .json({ success: false, message: "User not found." });
+      }
+
+      // Return the updated user information
+      return res.status(200).json({ success: true, message: updatedUser });
+    } catch (error) {
+      // Handle possible errors
+      return res.status(500).json({
+        success: false,
+        message: "Server error occurred while updating the user.",
+        error: error.message,
+      });
+    }
+  };
+  // Update user in the database
+  return await updateUserInDatabase();
+};
+
+
+exports.deleteUserByAdmin = async (req, res) => {
+  const { id } = req.params; // Assuming the user's ID is securely obtained from the authenticated session
+
+  try {
+    // Attempt to delete the user by ID
+    const deletedUser = await User.findByIdAndDelete(id);
+
+    // Check if a user was found and deleted
+    if (!deletedUser) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found.",
+      });
+    }
+
+    // Respond to the client upon successful deletion
+    return res.status(200).json({
+      success: true,
+      message: "User deleted successfully.",
+    });
+  } catch (error) {
+    // Handle possible errors during the deletion process
+    return res.status(500).json({
+      success: false,
+      message: "Server error occurred while deleting the user.",
+      error: error.message,
+    });
+  }
+};
