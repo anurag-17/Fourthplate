@@ -1,5 +1,6 @@
 
 import Dashboard from "../admin-pages/Dashboard";
+import SubAdmin from "../admin-pages/sub-admin/page";
 import User from "../admin-pages/user/User"
 import Setting from "../auth/setting";
 import AllEvent from "../evet";
@@ -12,19 +13,24 @@ export const sideMenus = [
     // icon: <DashboardIcon />,
   },
   {
-    id: 1,
+      id: 1,
+      label: "SubAdmin list",
+      component : <SubAdmin />,
+    },
+  {
+    id: 2,
     label: "User list",
     component : <User />,
     // url: "/",
   },
   {
-    id: 2,
+    id: 3,
     label: "Events",
     component : <AllEvent />,
     // url: "/",
   },
   {
-    id: 3,
+    id: 4,
     label: "Setting",
     component : <Setting />,
     // url: "/",
