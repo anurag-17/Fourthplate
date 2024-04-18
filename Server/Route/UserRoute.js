@@ -3,7 +3,7 @@ const multer = require('multer');
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 const { isAuthJWT, authorizeRoles } = require("../Utils/jwt")
-const { addUser, loginUser, logoutUser, forgotPwd, resetPassword, deleteUser, updateUserPassword, updateUser, getUserById, getAllUsersWithPagination, userData, uploadImage, verifyUser } = require("../Controller/UserAuth")
+const { addUser, loginUser, logoutUser, forgotPwd, resetPassword, deleteUser, updateUserPassword, updateUser, getUserById, getAllUsersWithPagination, userData, uploadImage, verifyUser,filterUsers } = require("../Controller/UserAuth")
 const router = express.Router()
 
 router.route("/add").post(addUser)
@@ -18,6 +18,11 @@ router.route("/update/:id").put(isAuthJWT,updateUser)
 router.route("/userData").get(isAuthJWT, authorizeRoles("admin"),userData)
 router.route("/upload").post(isAuthJWT, upload.single('file'),uploadImage)
 router.route("/verify").get(isAuthJWT,verifyUser)
+
+// router.get("/filterUsers_admin").get(filterUsers)
+
+
+
 // router.route("/login").get(adminLogin)
 // router.route("/updatePass").post(isAuthJWT,authorizeRoles("Admin"),updatePassword)
 // router.route("/logout").get(isAuthJWT, authorizeRoles("Admin"), logout)

@@ -277,7 +277,7 @@ exports.getAllEvents = async (req, res) => {
         // No need to populate further nested fields
       });
 
-      
+      console.log("allEvents",allEvents);
     
 
       // Filter events based on distance within specified range
@@ -323,6 +323,9 @@ exports.getAllEvents = async (req, res) => {
         .populate("joinerId")
         .skip(skip)
         .limit(limit);
+
+console.log("events",events);
+
 
       res.status(200).json({
         success: true,

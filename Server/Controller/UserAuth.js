@@ -77,6 +77,7 @@ const StatusMessage = {
 
 exports.verifyUser = async (req, res) => {
   const user = req.user;
+  console.log("user",user);
   try {
       let loggedInUser;
       
@@ -96,7 +97,7 @@ exports.verifyUser = async (req, res) => {
       if (!loggedInUser) {
           loggedInUser = await Admin.findById(user._id).select("-password -activeToken");
       }
-
+console.log("loggedInUser",loggedInUser);
       // If the user or admin is found, send the response
       if (loggedInUser) {
           return res.status(HttpStatus.OK).json({
@@ -144,7 +145,7 @@ exports.uploadImage = async (req, res) => {
 
 exports.addUser = async (req, res) => {
   try {
-    const { name, email, password, contact, age, picture, gender, providerId,appleId } =
+    const { name, email, password, contact, age, picture, gender, providerId,appleId, location } =
       req.body || "";
 
     if (!appleId && (!email || (!password && !providerId))) {
@@ -183,7 +184,8 @@ exports.addUser = async (req, res) => {
       picture,
       gender,
       providerId,
-      appleId
+      appleId,
+      location
     });
     const result = await userData.save();
     //   console.log(result); // Log the result for debugging, avoid exposing in production
@@ -686,7 +688,7 @@ exports.Create_UserBy_Admin = async (req, res, next) => {
     const mailOptions = {
       from: "app@fourthplate.com",
       to: email,
-      subject: "Congratulations! Your Account is Successfully Created",
+      subject: "Congratulations! Your Account is Successfully Created  By Admin",
       text: `<h2>Hello Dear, </h2>
           <h3>Congratulations! Your Account successfully is Created for our service. Welcome!
           Your account email :- ${email},
@@ -804,5 +806,50 @@ exports.deleteUserByAdmin = async (req, res) => {
       message: "Server error occurred while deleting the user.",
       error: error.message,
     });
+  }
+};
+
+
+exports.filterUsers = async (req, res) => {
+  try {
+      let query = {};
+      const { email, location, name } = req.query;
+
+      if (email) {
+          query.email = email;
+      }
+      if (location) {
+          query.location = location;
+      }
+      if (name) {
+          query.name = name;
+      }
+
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 50;
+      const skip = (page - 1) * limit;
+
+      const users = await User.find(query).skip(skip).limit(limit);
+      const totalUsers = await User.countDocuments(query);
+      const totalPages = Math.ceil(totalUsers / limit);
+
+      if (users.length > 0) {
+          return res.status(200).json({
+              success: true,
+              message: "Filtered users retrieved successfully.",
+              count: users.length,
+              page,
+              totalPages,
+              data: users,
+          });
+      } else {
+          return res.status(404).json({
+              success: false,
+              message: "No users found matching the specified criteria.",
+          });
+      }
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ success: false, message: 'Internal server error' });
   }
 };

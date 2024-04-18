@@ -71,6 +71,7 @@ exports.addAdmin = async (req, res) => {
       .json({ success: false, message: StatusMessage.SERVER_ERROR });
   }
 };
+
 exports.adminLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -117,6 +118,7 @@ exports.adminLogin = async (req, res) => {
       .json({ success: false, message: StatusMessage.SERVER_ERROR });
   }
 };
+
 exports.logout = async (req, res) => {
   try {
     const authHeader = req.headers.authorization;

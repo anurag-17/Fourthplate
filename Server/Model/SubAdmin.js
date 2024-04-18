@@ -1,13 +1,13 @@
 const mongoose = require("mongoose");
-const Event = require("./Event");
-const { type } = require("os");
-const userSchema = new mongoose.Schema({
+const SubAdminSchema = new mongoose.Schema({
   name: {
     type: String,
     // required: [true, "Please provide user name."],
   },
   email: {
     type: String,
+    required:[true, "Please provide user email."],
+    unique :  true,
   },
   contact: {
     type: String,
@@ -15,6 +15,7 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
+    required: [true, "Provide passcode"],
   },
   age: {
     type: Number,
@@ -27,15 +28,7 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    default: "User",
-  },
-  eventJoined:[{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Event'
-  }],
-  isBlocked: {
-    type: Boolean,
-    default: false
+    default: "SubAdmin",
   },
   activeToken: {
     type: String,
@@ -43,17 +36,8 @@ const userSchema = new mongoose.Schema({
   resetToken: {
     type: String,
   },
-  providerId:{
-    type:String
-  },
-  appleId:{
-    type:String,
-    default:null
-  },
-  location:{
-    type:String,
-    default:null
-  },
+
+
 });
-const User = mongoose.model("User", userSchema);
-module.exports = User;
+const SubAdmin = mongoose.model("SubAdmin", SubAdminSchema);
+module.exports = SubAdmin;

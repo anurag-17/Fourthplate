@@ -1,6 +1,8 @@
 const jwt = require("jsonwebtoken");
 const User = require("../Model/User");
 const Admin = require("../Model/Admin");
+const SubAdmin = require("../Model/SubAdmin");
+
 
 exports.generateToken = (payload, expiresIn = "12h") => {
   console.log(payload);

@@ -26,6 +26,8 @@ console.log(process.env.NODE_ENV === "dev");
 app.use('/api/adminauth', require('./Route/AdminRoute'));
 app.use('/api/userauth', require('./Route/UserRoute'))
 app.use('/api/eventauth', require('./Route/EventRoute'))
+app.use('/api/SubAdminauth', require('./Route/SubAdminRouter'))
+
 
 
 if (process.env.NODE_ENV === "dev") {
