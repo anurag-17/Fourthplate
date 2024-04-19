@@ -22,6 +22,7 @@ exports.verifyToken = (token) => {
     return null;
   }
 };
+
 exports.isAuthJWT = async (req, res, next) => {
   const authHeader = req.headers.authorization;
   let token = "";
@@ -48,7 +49,12 @@ exports.isAuthJWT = async (req, res, next) => {
 
     if (!req.user) {
       req.user = await Admin.findOne({ email: decodedData?.email });
+      // req.user = await SubAdmin.findOne({ email: decodedData?.email });
+if(!req.user){
+  req.user = await SubAdmin.findOne({ email: decodedData?.email });
+}
     }
+
     if (req.user.activeToken && req.user.activeToken === token) {
       next();
     } else {

@@ -6,6 +6,8 @@ const User = require("../Model/User");
 const sendEmail = require("../Utils/SendEmail");
 const Admin = require("../Model/Admin");
 const CsvParser = require("json2csv").Parser;
+const SubAdmin = require("../Model/SubAdmin");
+
 const HttpStatus = {
   OK: 200,
   INVALID: 201,
@@ -96,6 +98,11 @@ exports.verifyUser = async (req, res) => {
       // If the user is not found among regular users, check if they are an admin
       if (!loggedInUser) {
           loggedInUser = await Admin.findById(user._id).select("-password -activeToken");
+          if(!loggedInUser){
+            console.log("444");
+      // If the user is not found among regular users, check if they are an admin
+            loggedInUser = await SubAdmin.findById(user._id).select("-password -activeToken");
+          }
       }
 console.log("loggedInUser",loggedInUser);
       // If the user or admin is found, send the response

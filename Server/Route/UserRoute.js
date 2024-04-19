@@ -2,7 +2,7 @@ const express = require("express")
 const multer = require('multer');
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
-const { isAuthJWT, authorizeRoles } = require("../Utils/jwt")
+const { isAuthJWT,authorizeRoles } = require("../Utils/jwt")
 const { addUser, loginUser, logoutUser, forgotPwd, resetPassword, deleteUser, updateUserPassword, updateUser, getUserById, getAllUsersWithPagination, userData, uploadImage, verifyUser,filterUsers } = require("../Controller/UserAuth")
 const router = express.Router()
 

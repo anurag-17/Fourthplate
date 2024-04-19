@@ -13,11 +13,12 @@ router.route("/forgotPassword").post(forgotPwd)
 router.route("/resetPassword").post(resetPassword)
 
 // router.route("/Create_UserBy_Admin").post(isAuthJWT, authorizeRoles("Admin"),Create_UserBy_Admin)
-router.route("/Create_UserBy_Admin").post(isAuthJWT, authorizeRoles(["Admin", "Subadmin"]), Create_UserBy_Admin);
-router.route("/update/:id").put(isAuthJWT,authorizeRoles(["Admin", "Subadmin"]),updateUserByAdmin)
-router.route("/deletuser/:id").delete(isAuthJWT,authorizeRoles(["Admin", "Subadmin"]),deleteUserByAdmin)
-router.route("/getauser/:id").get(isAuthJWT, authorizeRoles(["Admin", "Subadmin"]),getUserById)
-router.route("/getalluser").get(isAuthJWT, authorizeRoles(["Admin", "Subadmin"]),getAllUsersWithPagination)
+router.route("/Create_UserBy_Admin").post(isAuthJWT, authorizeRoles("Admin"), Create_UserBy_Admin);
+router.route("/update/:id").put(isAuthJWT,authorizeRoles("Admin"),updateUserByAdmin)
+router.route("/deletuser/:id").delete(isAuthJWT,authorizeRoles("Admin"),deleteUserByAdmin)
+router.route("/getauser/:id").get(isAuthJWT, authorizeRoles("Admin"),getUserById)
+router.route("/getalluser").get(isAuthJWT, authorizeRoles("Admin"),getAllUsersWithPagination)
+
 
 
 router.route("/getAdminById").get(isAuthJWT, authorizeRoles("Admin"),getAdminById)

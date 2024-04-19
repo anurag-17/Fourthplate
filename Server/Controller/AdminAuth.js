@@ -167,6 +167,7 @@ exports.logout = async (req, res) => {
     }
   }
 };
+
 exports.updatePassword = async (req, res) => {
   try {
     const userId = req.user._id; // Assuming you have the user's ID from the session or token
