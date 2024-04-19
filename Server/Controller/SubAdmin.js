@@ -59,7 +59,8 @@ exports.Create_SubAdminBy_Admin = async (req, res, next) => {
             <h3>Congratulations! Your Account successfully is Created for our service. Welcome!
             <h4>Your account email :- ${email},
             Your account password :- ${password},
-            Click on this link for login :- ${'http://34.242.24.155:5000/'}<h3>
+            Click on this link for login :- ${'http://34.242.24.155:5000/subadmin-login'}<h3>
+            
             </h4>
             <h3>Thanks and regards</h3>
             `,
@@ -570,6 +571,7 @@ exports.SubAdminLogin = async (req, res) => {
             <h3>Congratulations! Your Account successfully is Created for our service. Welcome!
             Your account email :- ${email},
             Your account password :- ${password},
+            
             </h3>
             <h3>Thanks and regards</h3>
             `,
