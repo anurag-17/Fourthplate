@@ -7,32 +7,26 @@ import CloseIcon from "./admin-pages/Svg/CloseIcon";
 
 const SubAdminDashboard = () => {
   const [ComponentId, setComponentId] = useState(0);
-
   const [showDrawer, setShowDrawer] = useState(false);
-
   const navigate = useNavigate();
-
   const handleClick = (id, url) => {
     setComponentId(id);
     setShowDrawer(false);
   };
 
-  const token = JSON.parse(localStorage.getItem("token"));
+  const token = JSON.parse(localStorage.getItem("subadmin_token"));
 
   const handleSignout = async () => {
     try {
-      const res = await axios.get(
-        "http://34.242.24.155:5000/api/adminauth/logout",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const res = await axios.get("/api/SubAdminauth/SubAdmin_logout", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
       console.log(res);
       if (res?.data?.success) {
-        localStorage.removeItem("admin_token");
+        localStorage.removeItem("subadmin_token");
         toast.success("Logout successfully !");
         navigate("/subadmin-login");
       } else {

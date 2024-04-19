@@ -5,7 +5,7 @@ import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 
 const AddUser = ({ closeDrawer, refreshData }) => {
-  const token = JSON.parse(localStorage.getItem("admin_token"));
+  const token = JSON.parse(localStorage.getItem("subadmin_token"));
   const [userDetail, setUserDetail] = useState({
     email: "",
 
@@ -17,7 +17,7 @@ const AddUser = ({ closeDrawer, refreshData }) => {
 
     try {
       const response = await axios.post(
-        "/api/adminauth/Create_UserBy_Admin",
+        "/api/SubAdminAuth/Create_UserBy_SubAdmin",
         userDetail,
         {
           headers: {
@@ -27,13 +27,12 @@ const AddUser = ({ closeDrawer, refreshData }) => {
         }
       );
 
-      if (response.status === 200 ) {
+      if (response.status === 200) {
         toast.success("User Added Successfully!");
         refreshData();
         closeDrawer();
       } else {
         toast.error(response.data.message);
-       
       }
     } catch (error) {
       console.error(error);

@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { toast } from "react-toastify";
 
 const UpdateUser = ({ editData, closeDrawer, refreshData }) => {
-  const token = JSON.parse(localStorage.getItem("admin_token"));
+  const token = JSON.parse(localStorage.getItem("subadmin_token"));
   const [isLoader, setLoader] = useState(false);
   const [userDetail, setUserDetail] = useState(editData);
 
@@ -19,7 +19,7 @@ const UpdateUser = ({ editData, closeDrawer, refreshData }) => {
     setLoader(true);
     try {
       const response = await axios.put(
-        `/api/adminauth/update/${userDetail._id}`,
+        `/api/subAdminauth/update/${userDetail._id}`,
         userDetail,
         {
           headers: {

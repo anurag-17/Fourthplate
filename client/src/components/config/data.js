@@ -4,6 +4,7 @@ import User from "../admin-pages/user/User";
 import Setting from "../auth/setting";
 import AllEvent from "../evet";
 import SubAdminDashboard from "../subAdmin-pages/Dashboard";
+import Users from "../subAdmin-pages/users/User";
 export const sideMenus = [
   {
     id: 0,
@@ -57,7 +58,7 @@ export const subAdminSideMenus = [
   {
     id: 1,
     label: "User list",
-    component: <User />,
+    component: <Users />,
     // url: "/",
   },
 ];

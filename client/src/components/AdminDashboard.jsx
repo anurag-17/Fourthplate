@@ -7,7 +7,6 @@ import CloseIcon from "./admin-pages/Svg/CloseIcon";
 
 const AdminDashboard = () => {
   const [ComponentId, setComponentId] = useState(0);
-
   const [showDrawer, setShowDrawer] = useState(false);
 
   const navigate = useNavigate();
@@ -34,7 +33,7 @@ const AdminDashboard = () => {
       if (res?.data?.success) {
         localStorage.removeItem("admin_token");
         toast.success("Logout successfully !");
-        navigate("/login");
+        navigate("/");
       } else {
         toast.error("Logout failed try again !");
       }
