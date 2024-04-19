@@ -2,10 +2,10 @@ import React, { Fragment, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
-import { sideMenus } from "./config/data";
+import { subAdminSideMenus } from "./config/data";
 import CloseIcon from "./admin-pages/Svg/CloseIcon";
 
-const AdminDashboard = () => {
+const SubAdminDashboard = () => {
   const [ComponentId, setComponentId] = useState(0);
 
   const [showDrawer, setShowDrawer] = useState(false);
@@ -17,7 +17,7 @@ const AdminDashboard = () => {
     setShowDrawer(false);
   };
 
-  const token = JSON.parse(localStorage.getItem("admin_token"));
+  const token = JSON.parse(localStorage.getItem("token"));
 
   const handleSignout = async () => {
     try {
@@ -34,7 +34,7 @@ const AdminDashboard = () => {
       if (res?.data?.success) {
         localStorage.removeItem("admin_token");
         toast.success("Logout successfully !");
-        navigate("/login");
+        navigate("/subadmin-login");
       } else {
         toast.error("Logout failed try again !");
       }
@@ -76,12 +76,12 @@ const AdminDashboard = () => {
           <div className="">
             <div className="flex justify-center items-center whitespace-pre-wrap py-[20px]">
               <h1 className="bold-32 text-center whitespace-nowrap text-xl">
-                Admin Dashboard
+                SubAdmin Dashboard
               </h1>
             </div>
             <div className="bg-white h-[1px] w-[70%] mx-auto"></div>
             <div className="flex flex-col 2xl:gap-6 gap-5 pt-[60px]">
-              {sideMenus.map((item, index) => (
+              {subAdminSideMenus.map((item, index) => (
                 <div
                   key={index}
                   className={`pl-6 py-3 mx-5 rounded-md  flex gap-x-3 items-center cursor-pointer  transition-colors medium-16 bg-[#0f2439] 
@@ -111,7 +111,7 @@ const AdminDashboard = () => {
           </div>
         </div>
         <div className=" bg-[#f3f3f3] xl:w-[80%] lg:w-[75%] w-full">
-          {sideMenus.map((item, index) => (
+          {subAdminSideMenus.map((item, index) => (
             <Fragment key={index}>
               {ComponentId === item.id && item.component}
             </Fragment>
@@ -122,4 +122,4 @@ const AdminDashboard = () => {
   );
 };
 
-export default AdminDashboard;
+export default SubAdminDashboard;

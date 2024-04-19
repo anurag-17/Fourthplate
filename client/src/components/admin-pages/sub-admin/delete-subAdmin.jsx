@@ -1,44 +1,44 @@
 import React, { useState } from "react";
 import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 
-const DeleteModule = ({ id, closeModal, refreshData }) => {
+const DeleteSubAdmin = ({ id, closeModal, refreshData }) => {
   const [isLoading, setLoading] = useState(false);
   const token = JSON.parse(localStorage.getItem("admin_token"));
 
-  const handleClose = () => {
-    closeModal();
-  };
-
-  const handleDelete = async (e) => {
+  const handleDelete = (e) => {
     e.preventDefault();
     setLoading(true);
 
-    try {
-      const response = await axios.delete(
-        `http://34.242.24.155:5000/api/eventauth/deleteEvent/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+    const options = {
+      method: "DELETE",
+      url: `http://34.242.24.155:5000/api/adminauth/delete_SubAdminBy_Admin/${id}`,
 
-      if (response.status === 200) {
-        toast.success("Event Deleted successfully!");
-        closeModal();
-        refreshData();
-      } else {
-        toast.error("Failed. Something went wrong!");
-      }
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed. Something went wrong!");
-    } finally {
-      setLoading(false);
-    }
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    };
+
+    axios
+      .request(options)
+      .then(function (res) {
+        if (res.data?.success) {
+          setLoading(false);
+          toast.success("SubAdmin Remove successfully!");
+          closeModal();
+          refreshData();
+        } else {
+          setLoading(false);
+          toast.error("Failed. something went wrong!");
+          return;
+        }
+      })
+      .catch(function (error) {
+        setLoading(false);
+        console.error(error);
+        toast.error("Server error!");
+      });
   };
 
   return (
@@ -55,7 +55,7 @@ const DeleteModule = ({ id, closeModal, refreshData }) => {
           <button
             className="w-full border border-1 rounded-md border-green-400 text-green-700 hover:bg-green-200 text-sm  px-2 py-3
                               hover:border-none  border-green-400 text-green-700 hover:bg-green-200 custom_btn_d "
-            onClick={handleClose}
+            onClick={closeModal}
           >
             No, Keep It
           </button>
@@ -78,4 +78,4 @@ const DeleteModule = ({ id, closeModal, refreshData }) => {
   );
 };
 
-export default DeleteModule;
+export default DeleteSubAdmin;

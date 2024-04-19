@@ -5,19 +5,19 @@ import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
 import dash_img from "../../assets/g2raph.svg";
-import PasswordIcon from "./Svg/PasswordIcon";
-import ProfileIcon from "./Svg/ProfileIcon";
-import SignOutIcon from "./Svg/SignOutIcon";
-import UsersIcon from "./Svg/UsersIcon";
+import PasswordIcon from "../../components/admin-pages/Svg/PasswordIcon";
+import ProfileIcon from "../../components/admin-pages/Svg/ProfileIcon";
+import SignOutIcon from "../../components/admin-pages/Svg/SignOutIcon";
+import UsersIcon from "../../components/admin-pages/Svg/UsersIcon";
 
-const Dashboard = () => {
+const SubDashboard = () => {
   const token = JSON.parse(localStorage.getItem("admin_token"));
   const navigate = useNavigate();
   const [count, setCount] = useState();
-  
-useEffect(() => {
-  countData()
-}, []);
+
+  useEffect(() => {
+    countData();
+  }, []);
 
   const handleSignout = async () => {
     try {
@@ -34,7 +34,7 @@ useEffect(() => {
       if (res?.data?.success) {
         localStorage.removeItem("admin_token");
         toast.success("Logout successfully !");
-        navigate("/login"); 
+        navigate("/subadmin-login");
       } else {
         toast.error("Logout failed try again !");
       }
@@ -43,35 +43,32 @@ useEffect(() => {
       toast.error(error?.response?.data?.message || "Invalid token !");
     }
   };
-const countData = async()=>{
-  try {
-    const res = await axios.get(
-      "http://34.242.24.155:5000/api/adminauth/counts",
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    // console.log(res?.data); 
-    setCount(res?.data)
-  } catch (error) {
-    console.error("Error occurred:", error);
-  }
-}
+  const countData = async () => {
+    try {
+      const res = await axios.get(
+        "http://34.242.24.155:5000/api/adminauth/counts",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      // console.log(res?.data);
+      setCount(res?.data);
+    } catch (error) {
+      console.error("Error occurred:", error);
+    }
+  };
   return (
     <>
       <section className>
         <div className=" mx-auto">
           <div className="rounded-[10px] bg-white py-[20px] flexCenter md:flexBetween flex-col md:flex-row gap-3 px-[20px]">
             <p className="text-[20px] md:text-[22px] font-semibold leading-tight md:block hidden mt-[20px] lg:mt-0">
-              Welcome to Admin Dashboard
+              Welcome to SubAdmin Dashboard
             </p>
-            <p className="text-[20px] md:text-[22px] font-semibold leading-tight text-center mt-[30px] md:hidden block">
-              Welcome to
-              <br /> Admin Dashboard
-            </p>
+
             <div className="flexCenter gap-x-7 lg:gap-x-5 md:flex-auto flex-wrap gap-y-3 md:justify-end">
               <Menu
                 as="div"
@@ -121,7 +118,7 @@ const countData = async()=>{
           </div>
         </div>
 
-        <div className="px-[20px]">
+        {/* <div className="px-[20px]">
           <div className="md:py-[30px] py-[20px] grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
             <div className="col-span-1 bg-white px-5 py-4 rounded flex items-center gap-5">
               <div className="bg-green-800 h-[50px] w-[50px] flexCenter rounded-[6px]">
@@ -146,10 +143,10 @@ const countData = async()=>{
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
       </section>
     </>
   );
 };
 
-export default Dashboard;
+export default SubDashboard;

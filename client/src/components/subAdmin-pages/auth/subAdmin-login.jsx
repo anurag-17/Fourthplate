@@ -2,10 +2,9 @@ import React, { useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
-
 import RightSection from "./RightSection";
 
-const Login = () => {
+const SubAdminLogin = () => {
   const navigate = useNavigate();
   const [isLoading, setLoading] = useState(false);
   const [loginDetails, setLoginDetails] = useState({
@@ -24,7 +23,7 @@ const Login = () => {
     e.preventDefault();
     try {
       const res = await axios.post(
-        "http://34.242.24.155:5000/api/adminauth/login",
+        "http://34.242.24.155:5000/api/SubAdminauth/SubAdminLogin",
         loginDetails,
         {
           headers: {
@@ -35,8 +34,11 @@ const Login = () => {
       console.log(res);
       if (res?.data?.success === true) {
         toast.success("Login successfully!");
-        navigate("/admin-dashboard");
-        localStorage.setItem("admin_token", JSON.stringify(res?.data?.token));
+        navigate("/subadmin-dashboard");
+        localStorage.setItem(
+          "subadmin_token",
+          JSON.stringify(res?.data?.token)
+        );
         setLoading();
       } else {
         toast.error("Login failed please try later!");
@@ -58,7 +60,7 @@ const Login = () => {
               <form action="" className="" onSubmit={handleSubmit}>
                 <div className="flex flex-col gap-4 justify-center p-8 lg:p-14 md:max-w-[80%] lg:w-full lg:max-w-[100%] mx-auto ">
                   <div className="text-left ">
-                    <p className="mb-2 bold-40 ">Welcome Admin</p>
+                    <p className="mb-2 bold-40 ">Welcome SubAdmin</p>
                     <p className="regular-16 leading-[26px] text-gray-400 mb-4">
                       Welcome back! Please enter your details
                     </p>
@@ -110,7 +112,7 @@ const Login = () => {
                     >
                       {isLoading ? "Loading.." : "Sign In"}
                     </button>
-                    <Link to="/forgot-password">
+                    <Link to="/subadmin-forgot-password">
                       <div className="regular-16 underline text-center py-3 cursor-password">
                         Forgot password
                       </div>
@@ -127,4 +129,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default SubAdminLogin;

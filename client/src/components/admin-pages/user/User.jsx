@@ -3,16 +3,13 @@ import { Dialog, Transition } from "@headlessui/react";
 import axios from "axios";
 import { Switch } from "@headlessui/react";
 import DeleteUser from "./DeleteUser";
-import CloseIcon from "../Svg/CloseIcon";
-import Pagination from "../../pagination/Pagination";
 import Loader from "../../loader/Index";
 import { ToastContainer, toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
 import UpdateUser from "./update-user";
 import AddUser from "./add-user";
 
 const User = () => {
-  const token = JSON.parse(localStorage.getItem("token"));
+  const token = JSON.parse(localStorage.getItem("admin_token"));
   const [allData, setAllData] = useState("");
   const [isOpenDelete, setOpenDelete] = useState(false);
   const [id, setId] = useState("");

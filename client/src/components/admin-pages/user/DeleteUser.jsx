@@ -4,7 +4,7 @@ import axios from "axios";
 
 const DeleteUser = ({ id, closeModal, refreshData }) => {
   const [isLoading, setLoading] = useState(false);
-  const token = JSON.parse(localStorage.getItem("token"));
+  const token = JSON.parse(localStorage.getItem("admin_token"));
 
   const handleDelete = (e) => {
     e.preventDefault();

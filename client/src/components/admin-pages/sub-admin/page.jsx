@@ -1,15 +1,23 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
+import { Dialog, Transition } from "@headlessui/react";
+import { ToastContainer, toast } from "react-toastify";
+import Loader from "../../loader/Index";
+import AddSubAdmin from "./add-subAdmin";
+import DeleteSubAdmin from "./delete-subAdmin";
+import UpdateSubAdmin from "./update-subAdmin";
 
 const SubAdmin = () => {
-  const token = JSON.parse(localStorage.getItem("token"));
+  const token = JSON.parse(localStorage.getItem("admin_token"));
   const [allData, setAllData] = useState("");
   const [isRefresh, setRefresh] = useState(false);
+  const [isLoader, setLoader] = useState(false);
   const [editData, setEditData] = useState([]);
   const [isDrawerOpenO, setIsDrawerOpenO] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isOpenDelete, setOpenDelete] = useState(false);
   const [id, setId] = useState("");
+  const [subAdminEdit, setSubAdminEdit] = useState("");
 
   const refreshData = () => {
     setRefresh(!isRefresh);
@@ -35,11 +43,11 @@ const SubAdmin = () => {
     defaultUser();
   }, [isRefresh]);
 
-  // ==========Get All User==============
+  // ==========Get All SubAdmin==============
   const defaultUser = () => {
     const option = {
       method: "GET",
-      url: "http://34.242.24.155:5000/api/",
+      url: "http://34.242.24.155:5000/api/adminauth/getAll_SubAdmin",
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
@@ -56,10 +64,41 @@ const SubAdmin = () => {
       });
   };
 
+  // ==========Get A SubAdmin==============
+
+  const openDrawerO = async (_id) => {
+    setLoader(true);
+    setSubAdminEdit(_id);
+    try {
+      const options = {
+        method: "GET",
+        url: `http://34.242.24.155:5000/api/adminauth/get_SubAdminBy_Id/${_id}`,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      };
+      const response = await axios.request(options);
+      if (response.status === 200) {
+        setEditData(response?.data?.data);
+        console.log(response?.data?.data, "subadmin");
+        setIsDrawerOpenO(true);
+        setLoader(false);
+      } else {
+        console.error("Error: Unexpected response status");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const closeDrawerO = () => {
+    setIsDrawerOpenO(false);
+  };
+
   return (
     <>
-      {/* {isLoader && <Loader />}
-      <ToastContainer autoClose={1000} /> */}
+      {isLoader && <Loader />}
+      <ToastContainer autoClose={1000} />
       <section className="w-full">
         <div className=" mx-auto">
           <div className="mt-2 sm:mt-2 lg:mt-3 xl:mt-4 2xl:mt-7 flex justify-between items-center 2xl:px-10 border mx-5 lg:mx-8 bg-white rounded-lg 2xl:h-[100px] xl:h-[70px] lg:h-[60px] md:h-[50px] sm:h-[45px] h-[45px]  xl:px-8 lg:px-5 md:px-4 sm:px-4 px-4">
@@ -76,7 +115,7 @@ const SubAdmin = () => {
 
           <div className=" mx-5 lg:mx-8 my-5 flex justify-end">
             <button
-              //   onClick={openDrawer}
+              onClick={openDrawer}
               className="border hover:bg-gray-300 rounded-md text-white my-auto bg-lightBlue-600  cursor-pointer 2xl:p-2  2xl:text-[18px] xl:p-2 xl:text-[14px] lg:p-[6px] lg:text-[12px] md:text-[10px] md:p-1 sm:text-[10px] sm:p-1 p-[3px] text-[12px]"
             >
               + Add SubAdmin
@@ -130,9 +169,7 @@ const SubAdmin = () => {
                             <td className="w-2/12">
                               {" "}
                               <div className=" my-3 gap-5">
-                                <button
-                                // onClick={() => openDrawerO(item?._id)}
-                                >
+                                <button onClick={() => openDrawerO(item?._id)}>
                                   <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     fill="none"
@@ -150,7 +187,7 @@ const SubAdmin = () => {
                                 </button>
                                 <button
                                   type="button"
-                                  //   onClick={() => openModal(item?._id)}
+                                  onClick={() => openModal(item?._id)}
                                 >
                                   <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -181,6 +218,137 @@ const SubAdmin = () => {
           </div>
         </div>
       </section>
+
+      {/* ==================Add Modale========== */}
+
+      <Transition appear show={isDrawerOpen} as={Fragment}>
+        <Dialog as="div" className="relative z-10" onClose={() => {}}>
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-black bg-opacity-25" />
+          </Transition.Child>
+
+          <div className="fixed inset-0 overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-1 text-center">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 scale-95"
+                enterTo="opacity-100 scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 scale-100"
+                leaveTo="opacity-0 scale-95"
+              >
+                <Dialog.Panel className="w-2/3 sm:w-[600px] 2xl:w-[800px] transform overflow-hidden rounded-2xl bg-white sm:py-6 p-4  sm:px-8 lg:px-8 text-left align-middle shadow-xl transition-all">
+                  <div className="flex justify-end">
+                    <button onClick={closeDrawer}>X</button>
+                  </div>
+                  <AddSubAdmin
+                    closeDrawer={closeDrawer}
+                    refreshData={refreshData}
+                  />
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition>
+
+      {/* ==================Update Modale========== */}
+      <Transition appear show={isDrawerOpenO} as={Fragment}>
+        <Dialog as="div" className="relative z-10" onClose={() => {}}>
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-black bg-opacity-25" />
+          </Transition.Child>
+
+          <div className="fixed inset-0 overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4 text-center">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 scale-95"
+                enterTo="opacity-100 scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 scale-100"
+                leaveTo="opacity-0 scale-95"
+              >
+                <Dialog.Panel className="w-2/3 sm:w-full sm:max-w-[700px]  transform overflow-hidden rounded-2xl bg-white p-4  sm:px-8 lg:px-8 text-left align-middle shadow-xl transition-all">
+                  <div className="flex justify-end">
+                    <button onClick={closeDrawerO}>X</button>
+                  </div>
+                  <UpdateSubAdmin
+                    cateEdit={subAdminEdit}
+                    closeDrawer={closeDrawerO}
+                    refreshData={refreshData}
+                    editData={editData}
+                  />
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition>
+
+      {/* ==================Delete Modale========== */}
+
+      <Transition appear show={isOpenDelete} as={Fragment}>
+        <Dialog as="div" className="relative z-10" onClose={() => {}}>
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-black bg-opacity-25" />
+          </Transition.Child>
+
+          <div className="fixed inset-0 overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4 text-center">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 scale-95"
+                enterTo="opacity-100 scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 scale-100"
+                leaveTo="opacity-0 scale-95"
+              >
+                <Dialog.Panel className="w-[90%] sm:w-full sm:max-w-[500px] transform overflow-hidden rounded-2xl bg-white p-4  sm:px-8 lg:px-8 2xl:p-10 text-left align-middle shadow-xl transition-all">
+                  <Dialog.Title
+                    as="h3"
+                    className="custom_heading_text font-semibold leading-6 text-gray-900 mt lg:mt-5"
+                  >
+                    Are You Sure! Want to Delete?
+                  </Dialog.Title>
+                  <DeleteSubAdmin
+                    closeModal={closeModal}
+                    refreshData={refreshData}
+                    id={id}
+                  />
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition>
     </>
   );
 };

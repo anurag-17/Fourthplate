@@ -2,14 +2,14 @@ import axios from "axios";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 
-const UpdateUser = ({ editData, closeDrawer, refreshData }) => {
+const UpdateSubAdmin = ({ editData, closeDrawer, refreshData }) => {
   const token = JSON.parse(localStorage.getItem("admin_token"));
   const [isLoader, setLoader] = useState(false);
-  const [userDetail, setUserDetail] = useState(editData);
+  const [subAdminDetail, setSubAdminDetail] = useState(editData);
 
   const inputHandler = (e) => {
-    setUserDetail({
-      ...userDetail,
+    setSubAdminDetail({
+      ...subAdminDetail,
       [e.target.name]: e.target.value,
     });
   };
@@ -19,8 +19,8 @@ const UpdateUser = ({ editData, closeDrawer, refreshData }) => {
     setLoader(true);
     try {
       const response = await axios.put(
-        `http://34.242.24.155:5000/api/adminauth/update/${userDetail._id}`,
-        userDetail,
+        `http://34.242.24.155:5000/api/adminauth/update_SubAdminBy_Admin/${subAdminDetail._id}`,
+        subAdminDetail,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -42,8 +42,8 @@ const UpdateUser = ({ editData, closeDrawer, refreshData }) => {
     setLoader(false);
   };
   const handleGenderChange = (e) => {
-    setUserDetail({
-      ...userDetail,
+    setSubAdminDetail({
+      ...subAdminDetail,
       gender: e.target.value,
     });
   };
@@ -52,7 +52,7 @@ const UpdateUser = ({ editData, closeDrawer, refreshData }) => {
     <>
       <section>
         <div className="flex justify-center items-center border border-[#f3f3f3] rounded-lg bg-white 2xl:px-5 2xl:h-[50px] 2xl:my-5 xl:px-4 xl:h-[40px] xl:my-4 lg:px-3 lg:h-[35px] lg:my-2 md:px-2 md:h-[30px] md:my-2 sm:px-1 sm:h-[25px] sm:my-2 px-1 h-[25px] my-2">
-          <h2 className="custom_heading_text font-semibold">Update User</h2>
+          <h2 className="custom_heading_text font-semibold">Update SubAdmin</h2>
         </div>
         <div>
           <form
@@ -63,7 +63,7 @@ const UpdateUser = ({ editData, closeDrawer, refreshData }) => {
               <label className="custom_input_label">Full Name</label>
               <input
                 onChange={inputHandler}
-                value={userDetail.name}
+                value={subAdminDetail.name}
                 type="text"
                 name="name"
                 className="custom_inputt capitalize"
@@ -75,7 +75,7 @@ const UpdateUser = ({ editData, closeDrawer, refreshData }) => {
               <label className="custom_input_label">Contact No.</label>
               <input
                 onChange={inputHandler}
-                value={userDetail.contact}
+                value={subAdminDetail.contact}
                 // type="number"
                 name="contact"
                 className="custom_inputt capitalize"
@@ -87,7 +87,7 @@ const UpdateUser = ({ editData, closeDrawer, refreshData }) => {
               <label className="custom_input_label">Age</label>
               <input
                 onChange={inputHandler}
-                value={userDetail.age}
+                value={subAdminDetail.age}
                 // type="number"
                 name="age"
                 className="custom_inputt capitalize"
@@ -99,7 +99,7 @@ const UpdateUser = ({ editData, closeDrawer, refreshData }) => {
               <select
                 id="gender"
                 className="custom_inputt capitalize"
-                value={userDetail.gender} // Bind the selected value to state
+                value={subAdminDetail.gender} // Bind the selected value to state
                 onChange={handleGenderChange} // Handle selection change
               >
                 <option value="male">Male</option>
@@ -107,15 +107,15 @@ const UpdateUser = ({ editData, closeDrawer, refreshData }) => {
                 <option value="other">Other</option>
               </select>
             </div>
-            <div className="flex justify-center">
+            <div className="flex justify-center w-full">
               {" "}
-              <div className="flex justify-center w-full">
+              <div className="flex justify-center mx-auto">
                 <button
                   type="submit"
                   disabled={isLoader}
                   className="custom_btn mx-auto"
                 >
-                  {isLoader ? "Loading..." : "Update"}
+                  {isLoader ? "Loading..." : "Update SubAdmin"}
                 </button>
               </div>
             </div>
@@ -126,4 +126,4 @@ const UpdateUser = ({ editData, closeDrawer, refreshData }) => {
   );
 };
 
-export default UpdateUser;
+export default UpdateSubAdmin;

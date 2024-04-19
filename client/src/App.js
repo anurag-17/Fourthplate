@@ -13,19 +13,25 @@ import ResetPassword from "./components/auth/ResetPassword";
 import ChangePassword from "./components/auth/ChangePassword";
 import User from "./components/admin-pages/user/User";
 import Setting from "./components/auth/setting";
+import SubAdminLogin from "./components/subAdmin-pages/auth/subAdmin-login";
+import SubAdminDashboard from "./components/subAdminDashboard";
 
 function App() {
   const [token, setToken] = useState(
     JSON.parse(localStorage.getItem("ad_token")) || null
   );
-
+  const [SubAdmin_token, setSubAdmin_token] = useState(
+    JSON.parse(localStorage.getItem("ad_token")) || null
+  );
   // console.log(token)
 
   function PrivateRoute({ path, element }) {
-    return token
-      ? element
-      : element;
-        // <Navigate to="/login" />
+    return token ? element : element;
+    // <Navigate to="/login" />
+  }
+  function SubAdminPrivateRoute({ path, element }) {
+    return SubAdmin_token ? element : element;
+    // <Navigate to="/login" />
   }
 
   // const verify = async () => {
@@ -64,8 +70,12 @@ function App() {
           <Route path="/user-list" element={<User />} />
           <Route path="/setting" element={<Setting />} />
           <Route path="/seting" element={<Setting />} />
-
           <Route path="/reset-password/:token" element={<ResetPassword />} />
+          <Route path="/subadmin-login" element={<SubAdminLogin />} />
+          <Route
+            path="/subadmin-dashboard"
+            element={<SubAdminPrivateRoute element={<SubAdminDashboard />} />}
+          />
           <Route
             path="/admin-dashboard"
             element={<PrivateRoute element={<AdminDashboard />} />}
