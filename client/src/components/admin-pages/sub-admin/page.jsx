@@ -15,6 +15,7 @@ const SubAdmin = () => {
   const [editData, setEditData] = useState([]);
   const [isDrawerOpenO, setIsDrawerOpenO] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isDrawerOpenn, setIsDrawerOpenn] = useState(false);
   const [isOpenDelete, setOpenDelete] = useState(false);
   const [id, setId] = useState("");
   const [subAdminEdit, setSubAdminEdit] = useState("");
@@ -31,6 +32,9 @@ const SubAdmin = () => {
     setIsDrawerOpen(false);
   };
 
+  function openModals(id) {
+    setId(id);
+  }
   function openModal(id) {
     setId(id);
     setOpenDelete(true);
@@ -94,7 +98,34 @@ const SubAdmin = () => {
   const closeDrawerO = () => {
     setIsDrawerOpenO(false);
   };
+  // ==========Get A SubAdmin Details==============
 
+  const closeDrawerOO = () => {
+    setIsDrawerOpenn(false);
+  };
+  const openDrawerDetails = async (_id) => {
+    setLoader(true);
+    try {
+      const options = {
+        method: "GET",
+        url: `http://34.242.24.155:5000/api/adminauth/get_SubAdminBy_Id/${_id}`,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      };
+      const response = await axios.request(options);
+      if (response.status === 200) {
+        setEditData(response?.data?.data);
+        setIsDrawerOpenn(true);
+        setLoader(false);
+      } else {
+        console.error("Error: Unexpected response status");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
   return (
     <>
       {isLoader && <Loader />}
@@ -125,48 +156,57 @@ const SubAdmin = () => {
           <div className=" flex mx-5 lg:mx-8  overflow-x-auto ">
             <div className="  w-full ">
               <div className="overflow-y-scroll  ">
-                <div className="h-[300px] xl:h-[400px]">
-                  <table className="w-[1500px] lg:w-[150%] xl:w-[100%] border bg-white rounded-md mt-5 p-10">
-                    <thead className="sticky-header">
-                      <tr className="w-full bg-coolGray-200 text-gray-400 text-start flex  border custom_table_text">
-                        <th className="w-[9%] text-start my-auto py-2 sm:py-2 md:py-2 lg:py-3 xl:py-4 2xl:py-5 p-1">
-                          <p>S.NO</p>
-                        </th>
-                        <th className="w-3/12 text-start my-auto py-2 sm:py-2 md:py-2 lg:py-3 xl:py-4 2xl:py-5 ">
-                          <p>Name</p>
-                        </th>
-                        <th className="w-1/12 text-start my-auto py-2 sm:py-2 md:py-2 lg:py-3 xl:py-4 2xl:py-5 ">
-                          <p>Age</p>
-                        </th>
-                        <th className="w-2/12 text-start my-auto py-2 sm:py-2 md:py-2 lg:py-3 xl:py-4 2xl:py-5 ">
-                          <p>Contact.No</p>
-                        </th>
-                        <th className="w-3/12 text-start my-auto py-2 sm:py-2 md:py-2 lg:py-3 xl:py-4 2xl:py-5 ">
-                          <p>Email</p>
-                        </th>
-
-                        <th className="w-2/12 text-start my-auto py-2 sm:py-2 md:py-2 lg:py-3 xl:py-4 2xl:py-5 ">
-                          <p>Action</p>
-                        </th>
+                <div className="overflow-x-auto">
+                  <table className="table table-zebra">
+                    {/* head */}
+                    <thead>
+                      <tr>
+                        <th>S.NO</th>
+                        <th>Name</th>
+                        <th>Age</th>
+                        <th>Contact.No</th>
+                        <th>Email</th>
+                        <th>Preview</th>
+                        <th>Action</th>
                       </tr>
                     </thead>
-
-                    <tbody className="w-full">
+                    <tbody>
                       {Array.isArray(allData) &&
                         allData.map((item, index) => (
-                          <tr
-                            key={index}
-                            className="p-2 text-start flex xl:text-[14px] lg:text-[12px] md:text-[14px] sm:text-[13px] text-[10px]"
-                          >
-                            <td className=" p-2 w-1/12">{index + 1}</td>
-                            <td className="  p-2  w-3/12 capitalize">
-                              {item.name}
+                          <tr>
+                            <th>{index + 1}</th>
+                            <td>{item.name}</td>
+                            <td>{item.age}</td>
+                            <td>{item.contact}</td>
+                            <td>{item.email}</td>
+                            <td>
+                              <div className="flex ">
+                                <button
+                                  onClick={() => openDrawerDetails(item?._id)}
+                                >
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke-width="1.5"
+                                    stroke="currentColor"
+                                    class="w-6 h-6"
+                                  >
+                                    <path
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"
+                                    />
+                                    <path
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                                    />
+                                  </svg>
+                                </button>
+                              </div>
                             </td>
-                            <td className="  w-1/12 p-2 ">{item.age}</td>
-                            <td className="  w-2/12 p-2 ">{item.contact}</td>
-                            <td className="  w-3/12 p-2 ">{item.email}</td>
-
-                            <td className="w-2/12">
+                            <td>
                               {" "}
                               <div className=" my-3 gap-5">
                                 <button onClick={() => openDrawerO(item?._id)}>
@@ -210,8 +250,6 @@ const SubAdmin = () => {
                         ))}
                     </tbody>
                   </table>
-
-                  <hr />
                 </div>
               </div>
             </div>
@@ -343,6 +381,56 @@ const SubAdmin = () => {
                     refreshData={refreshData}
                     id={id}
                   />
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition>
+
+      {/* ==================SubAdmin Detail Modale========== */}
+      <Transition appear show={isDrawerOpenn} as={Fragment}>
+        <Dialog as="div" className="relative z-10" onClose={() => {}}>
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-black bg-opacity-25" />
+          </Transition.Child>
+
+          <div className="fixed inset-0 overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-1 text-center">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 scale-95"
+                enterTo="opacity-100 scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 scale-100"
+                leaveTo="opacity-0 scale-95"
+              >
+                <Dialog.Panel className="w-2/3 sm:w-[600px] 2xl:w-[800px] transform overflow-hidden rounded-2xl bg-white sm:py-6 p-4  sm:px-8 lg:px-8 text-left align-middle shadow-xl transition-all">
+                  <div className="flex justify-end">
+                    <button onClick={closeDrawerOO}>X</button>
+                  </div>
+                  <div>
+                    <h1 className="font-semibold text-[20px] 2xl:text-[25px]">
+                      SubAdmin Details
+                    </h1>
+                    <div className="my-3">
+                      <h1 className="my-2">Name : {editData.name}</h1>
+                      <h1 className="my-2">Email : {editData.email}</h1>
+
+                      <h1 className="my-2">Contact No. : {editData.contact}</h1>
+
+                      <h1 className="my-2">Age : {editData.age}</h1>
+                    </div>
+                  </div>
                 </Dialog.Panel>
               </Transition.Child>
             </div>
