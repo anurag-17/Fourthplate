@@ -201,12 +201,21 @@ exports.addUser = async (req, res) => {
       to: email,
       subject: "Congratulations! You've Successfully Signed Up",
       text: `<h2>Hello Dear, </h2>
-          <h3>Congratulations! You have successfully signed up for our service. Welcome!
-          If you have any questions or need assistance, feel free to reply to this email or contact our support team.</h3>
-          <h3>Thanks and regards</h3>
+          <p>Congratulations! You have successfully signed up for our service.</p>
+          <p>Welcome! If you have any questions or need assistance, feel free to reply to this email or contact our support team</p>
+          <p>Thanks and regards</p>
+          <p>FourthPlate</p>
           `,
     };
   
+
+// Congratulations! You have successfully signed up for our service. 
+// Welcome! If you have any questions or need assistance, feel free to reply to this email or contact our support team
+
+// Thanks and regards
+// FourthPlate
+
+
     try {
       const info = await sendEmail(mailOptions);
       console.log("Email sent:", info);
@@ -703,7 +712,7 @@ exports.Create_UserBy_Admin = async (req, res, next) => {
           </h3>
           <h3>Thanks and regards</h3>
           `,
-    };
+    };z
   
     try {
       const info = await sendEmail(mailOptions);
