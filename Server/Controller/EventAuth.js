@@ -117,6 +117,7 @@ exports.deleteEvent = async (req, res) => {
 
 // Get event by ID controller
 exports.getEventById = async (req, res) => {
+  console.log("qqqq");
   const { id } = req.params;
 
   try {
@@ -202,6 +203,7 @@ exports.getEventById = async (req, res) => {
 
 // Get all events with pagination, search, and filters
 exports.getAllEvents = async (req, res) => {
+  console.log("vvvv");
   let { page = 1, limit = 100 } = req.query;
   const {
     search,
@@ -242,6 +244,11 @@ exports.getAllEvents = async (req, res) => {
  if (food) {
   query.food = new mongoose.Types.ObjectId(food); // Convert string ID to ObjectId
 }
+
+// const eventId = req.params.eventId; // Assuming you're passing the event ID as a parameter
+// const event = await Event.findById(eventId).populate("food");
+
+
 //  if(food){
 //   const foodIds = food.split(",").map(id => mongoose.Types.ObjectId(id)); // Convert string IDs to ObjectId
 //   query.food = { $in: foodIds };
@@ -255,9 +262,23 @@ exports.getAllEvents = async (req, res) => {
     try {
       query.latitude = { $exists: true };
       query.longitude = { $exists: true };
+
+      // const allEvents = await Event.find(query)
+      //   .populate("food")
+      //   .populate("ownerId")
+      //   .populate("joinerId");
+        
+        
       const allEvents = await Event.find(query)
-        .populate("food")
-        .populate("ownerId");
+      .populate("food")
+      .populate("ownerId")
+      .populate({
+        path: "joinerId", // Populate the joinerId field
+        // No need to populate further nested fields
+      });
+
+      console.log("allEvents",allEvents);
+    
 
       // Filter events based on distance within specified range
       const filteredEvents = allEvents.filter((event) => {
@@ -295,11 +316,16 @@ exports.getAllEvents = async (req, res) => {
   } else {
     try {
       const total = await Event.countDocuments(query);
+
       const events = await Event.find(query)
         .populate("food")
         .populate("ownerId")
+        .populate("joinerId")
         .skip(skip)
         .limit(limit);
+
+console.log("events",events);
+
 
       res.status(200).json({
         success: true,
@@ -425,9 +451,14 @@ exports.joinTheEvent = async (req, res) => {
 exports.getEventByOwnerID = async(req, res) => {
     try {
       // Assuming req.user._id is set and valid thanks to previous middleware (like authentication)
-      const id = req.user._id;
+      const id = req.user._id ;
       // Find all events where the ownerId matches the current user's ID
-      const events = await Event.find({ ownerId: id }).populate("food");
+      const events = await Event.find({ ownerId: id }).populate("food").populate("ownerId").populate({
+        path: "joinerId", // Populate the joinerId field
+        // No need to populate further nested fields
+      });
+    // const events = await Event.find(id).populate("food").populate("ownerId");
+
 
       // Check if events exist for the user
       if (!events || events.length === 0) {

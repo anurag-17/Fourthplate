@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 
 const AdminProfile = () => {
-  const token = JSON.parse(localStorage.getItem("token"));
+  const token = JSON.parse(localStorage.getItem("admin_token"));
 
   const [adminDetail, setAdminDetail] = useState("");
 

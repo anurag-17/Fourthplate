@@ -2,38 +2,33 @@ import React, { Fragment, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
-import { sideMenus } from "./config/data";
+import { subAdminSideMenus } from "./config/data";
 import CloseIcon from "./admin-pages/Svg/CloseIcon";
 
-const AdminDashboard = () => {
+const SubAdminDashboard = () => {
   const [ComponentId, setComponentId] = useState(0);
   const [showDrawer, setShowDrawer] = useState(false);
-
   const navigate = useNavigate();
-
   const handleClick = (id, url) => {
     setComponentId(id);
     setShowDrawer(false);
   };
 
-  const token = JSON.parse(localStorage.getItem("admin_token"));
+  const token = JSON.parse(localStorage.getItem("subadmin_token"));
 
   const handleSignout = async () => {
     try {
-      const res = await axios.get(
-        "http://34.242.24.155:5000/api/adminauth/logout",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const res = await axios.get("/api/SubAdminauth/SubAdmin_logout", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
       console.log(res);
       if (res?.data?.success) {
-        localStorage.removeItem("admin_token");
+        localStorage.removeItem("subadmin_token");
         toast.success("Logout successfully !");
-        navigate("/");
+        navigate("/subadmin-login");
       } else {
         toast.error("Logout failed try again !");
       }
@@ -75,12 +70,12 @@ const AdminDashboard = () => {
           <div className="">
             <div className="flex justify-center items-center whitespace-pre-wrap py-[20px]">
               <h1 className="bold-32 text-center whitespace-nowrap text-xl">
-                Admin Dashboard
+                SubAdmin Dashboard
               </h1>
             </div>
             <div className="bg-white h-[1px] w-[70%] mx-auto"></div>
             <div className="flex flex-col 2xl:gap-6 gap-5 pt-[60px]">
-              {sideMenus.map((item, index) => (
+              {subAdminSideMenus.map((item, index) => (
                 <div
                   key={index}
                   className={`pl-6 py-3 mx-5 rounded-md  flex gap-x-3 items-center cursor-pointer  transition-colors medium-16 bg-[#0f2439] 
@@ -110,7 +105,7 @@ const AdminDashboard = () => {
           </div>
         </div>
         <div className=" bg-[#f3f3f3] xl:w-[80%] lg:w-[75%] w-full">
-          {sideMenus.map((item, index) => (
+          {subAdminSideMenus.map((item, index) => (
             <Fragment key={index}>
               {ComponentId === item.id && item.component}
             </Fragment>
@@ -121,4 +116,4 @@ const AdminDashboard = () => {
   );
 };
 
-export default AdminDashboard;
+export default SubAdminDashboard;

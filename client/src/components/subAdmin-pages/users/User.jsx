@@ -8,8 +8,8 @@ import { ToastContainer, toast } from "react-toastify";
 import UpdateUser from "./update-user";
 import AddUser from "./add-user";
 
-const User = () => {
-  const token = JSON.parse(localStorage.getItem("admin_token"));
+const Users = () => {
+  const token = JSON.parse(localStorage.getItem("subadmin_token"));
   const [allData, setAllData] = useState("");
   const [isOpenDelete, setOpenDelete] = useState(false);
   const [id, setId] = useState("");
@@ -49,7 +49,7 @@ const User = () => {
   const defaultUser = () => {
     const option = {
       method: "GET",
-      url: "/api/adminauth/getalluser",
+      url: "/api/subAdminauth/getalluser",
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
@@ -109,15 +109,21 @@ const User = () => {
 
   const handleDownload = async () => {
     try {
-      const response = await axios.get("/api/userauth/userData", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await axios.get(
+        "/api/userauth/userData",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
       if (response.status === 200) {
         toast.success("Download Start");
-        window.open("/api/userauth/userData", "_blank");
+        window.open(
+          "/api/userauth/userData",
+          "_blank"
+        );
       } else {
         toast.error("Download failed.");
       }
@@ -134,7 +140,7 @@ const User = () => {
     try {
       const options = {
         method: "GET",
-        url: `/api/adminauth/getauser/${_id}`,
+        url: `/api/subAdminauth/getauser/${_id}`,
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
@@ -435,4 +441,4 @@ const User = () => {
   );
 };
 
-export default User;
+export default Users;

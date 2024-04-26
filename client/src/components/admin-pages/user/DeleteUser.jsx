@@ -4,7 +4,7 @@ import axios from "axios";
 
 const DeleteUser = ({ id, closeModal, refreshData }) => {
   const [isLoading, setLoading] = useState(false);
-  const token = JSON.parse(localStorage.getItem("token"));
+  const token = JSON.parse(localStorage.getItem("admin_token"));
 
   const handleDelete = (e) => {
     e.preventDefault();
@@ -12,7 +12,7 @@ const DeleteUser = ({ id, closeModal, refreshData }) => {
 
     const options = {
       method: "DELETE",
-      url: `http://34.242.24.155:5000/api/userauth/deletuser/${id}`,
+      url: `/api/userauth/deletuser/${id}`,
 
       headers: {
         Authorization: `Bearer ${token}`,

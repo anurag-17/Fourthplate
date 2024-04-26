@@ -1,32 +1,39 @@
-
 import Dashboard from "../admin-pages/Dashboard";
-import User from "../admin-pages/user/User"
+import SubAdmin from "../admin-pages/sub-admin/page";
+import User from "../admin-pages/user/User";
 import Setting from "../auth/setting";
 import AllEvent from "../evet";
+import SubAdminDashboard from "../subAdmin-pages/Dashboard";
+import Users from "../subAdmin-pages/users/User";
 export const sideMenus = [
   {
     id: 0,
     label: "Dashboard",
-    component : <Dashboard />,
+    component: <Dashboard />,
     url: "/",
     // icon: <DashboardIcon />,
   },
   {
     id: 1,
-    label: "User list",
-    component : <User />,
-    // url: "/",
+    label: "SubAdmin list",
+    component: <SubAdmin />,
   },
   {
     id: 2,
-    label: "Events",
-    component : <AllEvent />,
+    label: "User list",
+    component: <User />,
     // url: "/",
   },
   {
     id: 3,
+    label: "Events",
+    component: <AllEvent />,
+    // url: "/",
+  },
+  {
+    id: 4,
     label: "Setting",
-    component : <Setting />,
+    component: <Setting />,
     // url: "/",
   },
   // {
@@ -39,4 +46,19 @@ export const sideMenus = [
   //   label: "Property list",
   //   // component : <Property />,
   // },
+];
+export const subAdminSideMenus = [
+  {
+    id: 0,
+    label: "Dashboard",
+    component: <SubAdminDashboard />,
+    url: "/",
+    // icon: <DashboardIcon />,
+  },
+  {
+    id: 1,
+    label: "User list",
+    component: <Users />,
+    // url: "/",
+  },
 ];

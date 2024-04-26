@@ -7,7 +7,7 @@ import DeleteModule from "./delete-module";
 import { ToastContainer } from "react-toastify";
 
 const AllEvent = () => {
-  const token = JSON.parse(localStorage.getItem("token"));
+  const token = JSON.parse(localStorage.getItem("admin_token"));
   const [getAllEvent, setGetAllEvent] = useState([]);
   const [isRefresh, setRefresh] = useState(false);
   const [isLoader, setLoader] = useState(false);

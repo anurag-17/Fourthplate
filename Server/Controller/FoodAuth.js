@@ -1,46 +1,69 @@
 const Food = require("../Model/Food");
 
 // Add food controller
-exports.addFood = async (req, res) => {
-  const { name } = req.body; // Extract the name of the food from the request body
 
-  // Check if the food name was provided
-  if (!name) {
-    return res.status(400).json({
-      success: false,
-      message: "Please provide the name of the food.",
-    });
-  }
+// exports.addFood = async (req, res) => {
+//   const { name } = req.body; // Extract the name of the food from the request body
+// console.log("name");
+//   // Check if the food name was provided
+//   if (!name) {
+//     return res.status(400).json({
+//       success: false,
+//       message: "Please provide the name of the food.",
+//     });
+//   }
 
+//   try {
+//     // Check if the food item already exists
+//     const existingFood = await Food.findOne({ name });
+//     if (existingFood) {
+//       return res.status(409).json({
+//         success: false,
+//         message: "Food item already exists.",
+//       });
+//     }
+
+//     // Create a new food item
+//     const newFood = new Food({ name });
+//     await newFood.save(); // Save the new food item to the database
+
+//     // Respond with the newly created food item
+//     res.status(201).json({
+//       success: true,
+//       message: "Food item added successfully.",
+//       data: newFood,
+//     });
+//   } catch (error) {
+//     // Handle any errors that occur during the process
+//     res.status(500).json({
+//       success: false,
+//       message: "Server error occurred while adding the food item.",
+//       error: error.message,
+//     });
+//   }
+// };
+
+exports.addFood = async (req, res, next) => {
   try {
-    // Check if the food item already exists
-    const existingFood = await Food.findOne({ name });
-    if (existingFood) {
-      return res.status(409).json({
-        success: false,
-        message: "Food item already exists.",
-      });
-    }
-
-    // Create a new food item
-    const newFood = new Food({ name });
-    await newFood.save(); // Save the new food item to the database
-
-    // Respond with the newly created food item
-    res.status(201).json({
-      success: true,
-      message: "Food item added successfully.",
-      data: newFood,
+    const { name} = req.body;
+    
+    // Create a new habit object
+    const newHabit = new Food({
+      name
     });
+
+    // Save the new habit to the database
+    await newHabit.save();
+
+    res.status(201).json({ success: true, data: newHabit });
   } catch (error) {
-    // Handle any errors that occur during the process
-    res.status(500).json({
-      success: false,
-      message: "Server error occurred while adding the food item.",
-      error: error.message,
-    });
+    next(error);
   }
 };
+
+
+
+
 
 // Update food item controller
 exports.updateFood = async (req, res) => {

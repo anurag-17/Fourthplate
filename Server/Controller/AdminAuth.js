@@ -33,6 +33,7 @@ const StatusMessage = {
   SAVED_SUCC: "Saved Successfully!",
   NOT_FOUND: "Data not found.",
 };
+
 exports.addAdmin = async (req, res) => {
   try {
     const { email, fullname, password } = req.body;
@@ -70,6 +71,7 @@ exports.addAdmin = async (req, res) => {
       .json({ success: false, message: StatusMessage.SERVER_ERROR });
   }
 };
+
 exports.adminLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -116,6 +118,7 @@ exports.adminLogin = async (req, res) => {
       .json({ success: false, message: StatusMessage.SERVER_ERROR });
   }
 };
+
 exports.logout = async (req, res) => {
   try {
     const authHeader = req.headers.authorization;
@@ -164,6 +167,7 @@ exports.logout = async (req, res) => {
     }
   }
 };
+
 exports.updatePassword = async (req, res) => {
   try {
     const userId = req.user._id; // Assuming you have the user's ID from the session or token
@@ -330,3 +334,5 @@ exports.counts = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+

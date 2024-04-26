@@ -6,7 +6,7 @@ import { toast, ToastContainer } from "react-toastify";
 
 const ChangePassword = () => {
   const navigate = useNavigate();
-  const token = JSON.parse(localStorage.getItem("token"));
+  const token = JSON.parse(localStorage.getItem("admin_token"));
 
   const [formData, setFormData] = useState({
     currentPassword: "",
