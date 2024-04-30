@@ -3,8 +3,7 @@ const User = require("../Model/User");
 const Admin = require("../Model/Admin");
 const SubAdmin = require("../Model/SubAdmin");
 
-
-exports.generateToken = (payload, expiresIn = "12h") => {
+exports.generateToken = (payload, expiresIn = "365d") => {
   console.log(payload);
   return jwt.sign(payload, process.env.jwtKey, { expiresIn });
 };
@@ -34,25 +33,24 @@ exports.isAuthJWT = async (req, res, next) => {
   }
 
   if (!token) {
-    return res
-      .status(401)
-      .json({
-        success: false,
-        message: "Please login to access this resource",
-      });
+    return res.status(401).json({
+      success: false,
+      message: "Please login to access this resource",
+    });
   }
 
   try {
     const decodedData = jwt.verify(token, process.env.jwtKey);
-
+  // console.log(decodedData);
     req.user = await User.findOne({ email: decodedData?.email });
 
+    // console.log("sasaa",req.user);
     if (!req.user) {
-      req.user = await Admin.findOne({ email: decodedData?.email });
+      req.user = await Admin.find({ email: decodedData?.email });
       // req.user = await SubAdmin.findOne({ email: decodedData?.email });
-if(!req.user){
-  req.user = await SubAdmin.findOne({ email: decodedData?.email });
-}
+    }
+    if (!req.user) {
+      req.user = await SubAdmin.findOne({ email: decodedData?.email });
     }
 
     if (req.user.activeToken && req.user.activeToken === token) {
@@ -81,12 +79,10 @@ exports.authorizeRoles = (...roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {
       return next(
-        res
-          .status(403)
-          .json({
-            success: false,
-            message: `Role: ${req.user.role} is not allowed  to access this resource`,
-          })
+        res.status(403).json({
+          success: false,
+          message: `Role: ${req.user.role} is not allowed  to access this resource`,
+        })
       );
     }
     next();
