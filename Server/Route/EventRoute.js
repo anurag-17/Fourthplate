@@ -20,5 +20,5 @@ router.route("/joinevent").post(isAuthJWT, joinTheEvent)
 router.route("/getEventByOwner").get(isAuthJWT,getEventByOwnerID)
 
 // Delete Event by Owner ID
-router.route("/deleteEventByOwner/:id").delete(isAuthJWT, deleteEventByOwnerID)
+router.delete("/deleteEventByOwner/:userId/:eventId", isAuthJWT, deleteEventByOwnerID);
 module.exports = router;

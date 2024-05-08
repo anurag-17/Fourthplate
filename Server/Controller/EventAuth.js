@@ -122,10 +122,11 @@ exports.deleteEvent = async (req, res) => {
 // Delete Event by Owner ID
 
 exports.deleteEventByOwnerID = async (req, res) => {
-  console.log("id",id);
+  const { userId, eventId } = req.params;
+
   try {
-    const deletedEvent = await Event.findOneAndDelete({ ownerId: id });
-    if (!deletedEvent) {
+    const deletedEvent = await Event.findOneAndDelete({ _id: eventId, ownerId: userId });
+    if (!deletedEvent ) {
       return res.status(404).json({
         success: false,
         message: "Event not found.",
@@ -143,8 +144,8 @@ exports.deleteEventByOwnerID = async (req, res) => {
       error: error.message,
     });
   }
-
 }
+
 
 
 // Get event by ID controller
@@ -439,6 +440,7 @@ exports.joinTheEvent = async (req, res) => {
         { $pull: { eventJoined: eventId } },
         { new: true }
       );
+
       return res.status(200).json({
         success: true,
         message: "User has left the event successfully.",
@@ -479,6 +481,8 @@ exports.joinTheEvent = async (req, res) => {
     });
   }
 };
+
+
 
 exports.getEventByOwnerID = async(req, res) => {
     try {
