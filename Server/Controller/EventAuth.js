@@ -89,12 +89,14 @@ exports.updateEvent = async (req, res) => {
   }
 };
 
+
+
+
 // Delete event controller
 exports.deleteEvent = async (req, res) => {
   const { id } = req.params;
   try {
     const deletedEvent = await Event.findByIdAndDelete(id);
-
     if (!deletedEvent) {
       return res.status(404).json({
         success: false,
@@ -114,6 +116,36 @@ exports.deleteEvent = async (req, res) => {
     });
   }
 };
+
+
+
+// Delete Event by Owner ID
+
+exports.deleteEventByOwnerID = async (req, res) => {
+  console.log("id",id);
+  try {
+    const deletedEvent = await Event.findOneAndDelete({ ownerId: id });
+    if (!deletedEvent) {
+      return res.status(404).json({
+        success: false,
+        message: "Event not found.",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Event deleted successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Server error occurred while deleting the event",
+      error: error.message,
+    });
+  }
+
+}
+
 
 // Get event by ID controller
 exports.getEventById = async (req, res) => {
