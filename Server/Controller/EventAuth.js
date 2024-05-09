@@ -2,6 +2,8 @@ const Event = require("../Model/Event");
 // const calculateDistance = require("../Utils/DistanceCalculate");
 const mongoose = require("mongoose");
 const User = require("../Model/User");
+const EmailScheduler=require("../Model/EventSchedular");
+const sendEmail = require("../Utils/SendEmail");
 
 // Add event controller
 exports.addEvent = async (req, res) => {
@@ -394,6 +396,98 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
   return distance;
 }
 
+
+
+//old working code 
+// exports.joinTheEvent = async (req, res) => {
+//   try {
+//     const { userId, eventId } = req.body;
+
+//     // Validate userId and eventId
+//     if (
+//       !userId ||
+//       !eventId ||
+//       !mongoose.Types.ObjectId.isValid(userId) ||
+//       !mongoose.Types.ObjectId.isValid(eventId)
+//     ) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "userId or eventId not found or invalid.",
+//       });
+//     }
+
+//     // Fetch the event to check current number of joiners and allowed members
+//     const event = await Event.findById(eventId);
+//     const user = await User.findById(userId);
+
+//     if (!event || !user) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "User or Event not found.",
+//       });
+//     }
+
+//     // Check if user already joined
+//     const isUserJoined = event.joinerId.includes(userId);
+
+//     if (isUserJoined) {
+//       // If the user is already joined, remove them and increment allowMember
+//       await Event.findByIdAndUpdate(
+//         eventId,
+//         {
+//           $pull: { joinerId: userId },
+//           $inc: { allowMember: 1 },
+//         },
+//         { new: true }
+//       );
+//       await User.findByIdAndUpdate(
+//         userId,
+//         { $pull: { eventJoined: eventId } },
+//         { new: true }
+//       );
+
+//       return res.status(200).json({
+//         success: true,
+//         message: "User has left the event successfully.",
+//       });
+//     } else {
+//       // Before adding the user, ensure the event is not full
+//       if (event.allowMember <= 0) {
+//         return res.status(400).json({
+//           success: false,
+//           message: "Event is full. No more members can join.",
+//         });
+//       }
+
+//       // Add the user to the event and decrement allowMember
+//       await Event.findByIdAndUpdate(
+//         eventId,
+//         {
+//           $push: { joinerId: userId },
+//           $inc: { allowMember: -1 },
+//         },
+//         { new: true }
+//       );
+//       await User.findByIdAndUpdate(
+//         userId,
+//         { $addToSet: { eventJoined: eventId } },
+//         { new: true }
+//       );
+//       return res.status(200).json({
+//         success: true,
+//         message: "User joined the event successfully.",
+//       });
+//     }
+//   } catch (error) {
+//     console.error(error);
+//     return res.status(500).json({
+//       success: false,
+//       message: "Internal server error",
+//     });
+//   }
+// };
+
+
 exports.joinTheEvent = async (req, res) => {
   try {
     const { userId, eventId } = req.body;
@@ -441,9 +535,20 @@ exports.joinTheEvent = async (req, res) => {
         { new: true }
       );
 
+      // Record Current Timestamps
+
+      //   // Calculate timestamp for 24 hours from now
+      //   const currentTime = Date.now();
+      //   const joinTimestamp = new Date(currentTime + 10 * 60 * 1000);
+
+
+      // await EmailScheduler.create({ userId, eventId, joinTimestamp });
+
+
       return res.status(200).json({
         success: true,
         message: "User has left the event successfully.",
+
       });
     } else {
       // Before adding the user, ensure the event is not full
@@ -468,6 +573,17 @@ exports.joinTheEvent = async (req, res) => {
         { $addToSet: { eventJoined: eventId } },
         { new: true }
       );
+
+      // Calculate timestamp for 24 hours from now
+      const currentTime = Date.now();
+      const joinTimestamp = new Date(currentTime + 24 * 60 * 60 * 1000);
+
+      console.log("joinTimestamp",joinTimestamp);
+
+      // Schedule an email to be sent 24 hours from now
+
+      await EmailScheduler.create({ userId, eventId, joinTimestamp });
+
       return res.status(200).json({
         success: true,
         message: "User joined the event successfully.",
@@ -481,6 +597,59 @@ exports.joinTheEvent = async (req, res) => {
     });
   }
 };
+
+
+// Function to check and send emails for users who joined events more than 24 hours ago
+
+
+async function sendScheduleEmails(){
+  try{
+    const currentTime = Date.now();
+    const twentyFourHoursAgo = currentTime - 24 * 60 * 60 * 1000; 
+    console.log("currentTime",twentyFourHoursAgo);
+
+    const emailSchedules = await EmailScheduler.find({ joinTimestamp: { $lt: twentyFourHoursAgo } });
+
+    console.log("emailSchedules",emailSchedules);
+
+    for (const schedule of emailSchedules) {
+      const user = await User.findById(schedule.userId);
+      const event = await Event.findById(schedule.eventId);
+
+
+
+      const emailoptions={
+        from: "akash.hardia@gmail.com",
+        to: user.email,
+        subject: "How was Your Experience?",
+        text: `Hello ${user.name},
+
+        We hope you had a fantastic time at the ${event.eventName} event on ${event.date} at ${event.time}. Your presence was greatly appreciated, and we're eager to hear about your experience.
+        
+        Could you please take a moment to share your thoughts? Your feedback is invaluable to us and will help us improve future events. Whether you enjoyed the event or have suggestions for improvement, we'd love to hear from you.
+        
+        Thank you for joining us, and we look forward to hearing about your experience!
+        
+        Best regards,`
+      }
+
+
+      await sendEmail(emailoptions)
+      await EmailScheduler.findByIdAndDelete(schedule._id);
+
+      console.log(`Sending email to ${user.email} and ${event.ownerId.email}`);
+
+
+      await EmailScheduler.findByIdAndDelete(schedule._id);
+    }
+  } catch (error) {
+    console.error(error);
+  }
+
+}
+
+setInterval(sendScheduleEmails, 10* 60 * 1000); // Run the function every 24 hours
+
 
 
 

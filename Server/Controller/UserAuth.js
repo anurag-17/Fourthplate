@@ -199,12 +199,14 @@ exports.addUser = async (req, res) => {
     const mailOptions = {
       from: "app@fourthplate.com",
       to: email,
-      subject: "Congratulations! You've Successfully Signed Up",
-      text: `<h2>Hello Dear, </h2>
-          <p>Congratulations! You have successfully signed up for our service.</p>
-          <p>Welcome! If you have any questions or need assistance, feel free to reply to this email or contact our support team</p>
-          <p>Thanks and regards</p>
-          <p>FourthPlate</p>
+      subject: "Welcome to Fourthplate!",
+      text: ` <p>We are thrilled that you have joined the table.
+        Just check out what great events are in your area or why don’t you host one yourself?
+        We are looking forward to hearing about your experiences and the great people you met.</p>
+
+        <p>Make sure to follow us on Instagram.</p>
+
+        <h2>Your Fourthplate Team</h2>
           `,
     };
   
