@@ -15,6 +15,7 @@ import User from "./components/admin-pages/user/User";
 import Setting from "./components/auth/setting";
 import SubAdminLogin from "./components/subAdmin-pages/auth/subAdmin-login";
 import SubAdminDashboard from "./components/subAdminDashboard";
+import Template from "./components/template/template";
 
 function App() {
   const [token, setToken] = useState(
@@ -70,6 +71,8 @@ function App() {
           <Route path="/user-list" element={<User />} />
           <Route path="/setting" element={<Setting />} />
           <Route path="/seting" element={<Setting />} />
+          <Route path="/template" element={<Template />} />
+
           <Route path="/reset-password/:token" element={<ResetPassword />} />
           <Route path="/subadmin-login" element={<SubAdminLogin />} />
           <Route

@@ -61,7 +61,7 @@ const SubAdmin = () => {
       .request(option)
       .then((response) => {
         setAllData(response?.data?.data);
-        console.log(response?.data?.data, "mera");
+        // console.log(response?.data?.data);
       })
       .catch((error) => {
         console.log(error);
@@ -85,7 +85,7 @@ const SubAdmin = () => {
       const response = await axios.request(options);
       if (response.status === 200) {
         setEditData(response?.data?.data);
-        console.log(response?.data?.data, "subadmin");
+        // console.log(response?.data?.data, "subadmin");
         setIsDrawerOpenO(true);
         setLoader(false);
       } else {
