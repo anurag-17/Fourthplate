@@ -71,7 +71,7 @@ function App() {
           <Route path="/user-list" element={<User />} />
           <Route path="/setting" element={<Setting />} />
           <Route path="/seting" element={<Setting />} />
-          <Route path="/template" element={<Template />} />
+          <Route path="/delete-account" element={<Template />} />
 
           <Route path="/reset-password/:token" element={<ResetPassword />} />
           <Route path="/subadmin-login" element={<SubAdminLogin />} />
