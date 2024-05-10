@@ -636,12 +636,13 @@ exports.getAllUsersWithPagination = async (req, res) => {
   try {
     // Count the total number of users in the database
     const totalUsers = await User.countDocuments();
-
+console.log("totalUsers",totalUsers);
     // Calculate total pages
     const totalPages = Math.ceil(totalUsers / limit);
 
     // Find users with limit, skip, and sort for pagination
     const users = await User.find().skip(skip).limit(limit).sort({ _id: -1 });
+    console.log("users",users);
 
     // Respond with users and pagination details
     return res.status(200).json({
